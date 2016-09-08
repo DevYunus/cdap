@@ -33,6 +33,7 @@ import co.cask.cdap.common.utils.DirUtils;
 import co.cask.cdap.data2.util.hbase.HBaseTableUtilFactory;
 import co.cask.cdap.internal.app.ApplicationSpecificationAdapter;
 import co.cask.cdap.internal.app.runtime.BasicArguments;
+import co.cask.cdap.internal.app.runtime.LocalizationUtils;
 import co.cask.cdap.internal.app.runtime.ProgramOptionConstants;
 import co.cask.cdap.internal.app.runtime.SimpleProgramOptions;
 import co.cask.cdap.internal.app.runtime.codec.ArgumentsCodec;
@@ -183,6 +184,10 @@ public abstract class AbstractDistributedProgramRunner implements ProgramRunner 
       final ProgramOptions options = addArtifactPluginFiles(oldOptions, localizeResources,
                                                             DirUtils.createTempDir(tempDir));
 
+      // Add extra jars set in cConf to additionalClassPaths and localizeResources
+      LocalizationUtils.addExtraJars(localizeResources, cConf);
+      final List<String> additionalClassPaths = LocalizationUtils.getExtraJarNames(cConf);
+
       // Copy config files to local temp, and ask Twill to localize it to container.
       // What Twill does is to save those files in HDFS and keep using them during the lifetime of application.
       // Twill will manage the cleanup of those files in HDFS.
@@ -227,6 +232,7 @@ public abstract class AbstractDistributedProgramRunner implements ProgramRunner 
               // because inside Spark code, it will set and unset the SPARK_YARN_MODE system properties, causing
               // fork in distributed mode not working. Setting it in the environment, which Spark uses for defaults,
               // so it can't be unset by Spark
+              Iterables.addAll(additionalClassPaths, extraClassPaths);
               twillPreparer.withEnv(ImmutableMap.of("SPARK_YARN_MODE", "true",
                                                     "CDAP_LOG_DIR", ApplicationConstants.LOG_DIR_EXPANSION_VAR));
               if (options.isDebug()) {
@@ -278,7 +284,7 @@ public abstract class AbstractDistributedProgramRunner implements ProgramRunner 
 
               twillPreparer
                 .withDependencies(dependencies)
-                .withClassPaths(Iterables.concat(extraClassPaths, yarnAppClassPath))
+                .withClassPaths(Iterables.concat(additionalClassPaths, yarnAppClassPath))
                 .withApplicationClassPaths(yarnAppClassPath)
                 .withBundlerClassAcceptor(new HadoopClassExcluder() {
                   @Override

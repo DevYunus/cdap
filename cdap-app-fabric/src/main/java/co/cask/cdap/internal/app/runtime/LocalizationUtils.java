@@ -16,6 +16,8 @@
 
 package co.cask.cdap.internal.app.runtime;
 
+import co.cask.cdap.common.conf.CConfiguration;
+import co.cask.cdap.common.conf.Constants;
 import co.cask.cdap.common.io.Locations;
 import co.cask.cdap.common.lang.jar.BundleJarUtil;
 import co.cask.cdap.internal.app.runtime.distributed.LocalizeResource;
@@ -34,6 +36,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -41,6 +47,43 @@ import java.util.zip.GZIPInputStream;
  */
 public final class LocalizationUtils {
   private static final Logger LOG = LoggerFactory.getLogger(LocalizationUtils.class);
+
+  public static List<File> getExtraJars(CConfiguration cConf) {
+    String extraJarConf = cConf.get(Constants.AppFabric.EXTRA_JARS);
+    List<String> extraJars = extraJarConf == null ?
+      new ArrayList<String>() : Arrays.asList(extraJarConf.split(","));
+    List<File> jarFiles = new ArrayList<>();
+    for (String jarPath : extraJars) {
+      jarFiles.add(new File(jarPath));
+    }
+    return jarFiles;
+  }
+
+  public static  List<String> getExtraJarNames(CConfiguration cConf) {
+    List<String> jars = new ArrayList<>();
+    for (File jar : getExtraJars(cConf)) {
+      jars.add(jar.getName());
+    }
+    return jars;
+  }
+
+  /**
+   * Add the extra jars path set in the {@link CConfiguration} in a map.
+   */
+  public static void addExtraJars(Map<String, LocalizeResource> resourcesToLocalize, CConfiguration cConf) {
+    for (File jar : getExtraJars(cConf)) {
+      resourcesToLocalize.put(jar.getName(), new LocalizeResource(jar));
+    }
+  }
+
+  /**
+   * Add the extra jars set in the {@link CConfiguration} in a list .
+   */
+  public static void addLocalizedExtraJars(List<LocalizeResource> resourcesToLocalize, CConfiguration cConf) {
+    for (File jar : getExtraJars(cConf)) {
+      resourcesToLocalize.add(new LocalizeResource(new File(jar.getName())));
+    }
+  }
 
   /**
    * Localizes the specified {@link LocalizeResource} in the specified {@link File targetDir} with the specified

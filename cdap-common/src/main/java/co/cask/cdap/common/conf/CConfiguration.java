@@ -63,12 +63,13 @@ public class CConfiguration extends Configuration {
 
   /**
    * Creates an instance of configuration.
-   * @param file the file to be added to the configuration
+   *
+   * @param file      the file to be added to the configuration
    * @param moreFiles the list of more files to be added to the configuration
    * @return an instance of CConfiguration
    * @throws MalformedURLException if the error occurred while constructing the URL
    */
-  public static CConfiguration create(File file, File...moreFiles) throws MalformedURLException {
+  public static CConfiguration create(File file, File... moreFiles) throws MalformedURLException {
     CConfiguration conf = new CConfiguration();
     conf.addResource(file.toURI().toURL());
     for (File anotherFile : moreFiles) {
@@ -79,12 +80,13 @@ public class CConfiguration extends Configuration {
 
   /**
    * Creates an instance of configuration.
-   * @param resource the URL to be added to the configuration
+   *
+   * @param resource      the URL to be added to the configuration
    * @param moreResources the list of URL's to be added to the configuration
    * @return an instance of CConfiguration
    * @throws IllegalArgumentException when the resource cannot be converted to the URL
    */
-  public static CConfiguration create(URL resource, URL...moreResources) {
+  public static CConfiguration create(URL resource, URL... moreResources) {
     CConfiguration conf = new CConfiguration();
     conf.addResource(resource);
     for (URL resourceURL : moreResources) {
@@ -95,6 +97,7 @@ public class CConfiguration extends Configuration {
 
   /**
    * Creates an instance of configuration.
+   *
    * @param resource the resource to be added to the configuration
    * @return an instance of CConfiguration
    */

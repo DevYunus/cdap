@@ -225,6 +225,8 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
 
         // Localize the hConf file to executor nodes
         localizeResources.add(new LocalizeResource(saveHConf(hConf, tempDir)));
+
+        LocalizationUtils.addLocalizedExtraJars(localizeResources, cConf);
       }
 
       final Map<String, String> configs = createSubmitConfigs(tempDir, metricsConfPath, logbackJarName,
@@ -482,6 +484,16 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
         LOG.warn("Failed to locate cdap-common.jar. It will not be added to the spark extra classpath in the" +
                    " beginning.");
       }
+<<<<<<< HEAD
+=======
+
+      // Add extra jars set in cConf to jarFiles
+      for (String jar : LocalizationUtils.getExtraJarNames(cConf)) {
+        jarFiles.add(Paths.get("$PWD", jar).toString());
+      }
+
+      Collections.sort(jarFiles);
+>>>>>>> 9f893d8... localize extra jars set in cdap-site.xml for programs
       Joiner joiner = Joiner.on(File.pathSeparator).skipNulls();
       String extraClassPath = joiner.join(Paths.get("$PWD", CDAP_LAUNCHER_JAR), cdapCommonJarPath,
                                           Paths.get("$PWD", CDAP_SPARK_JAR, "lib", "*"));
