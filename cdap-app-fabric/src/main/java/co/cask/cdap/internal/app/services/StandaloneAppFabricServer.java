@@ -51,7 +51,7 @@ public class StandaloneAppFabricServer extends AppFabricServer {
    * Construct the Standalone AppFabricServer with service factory and configuration coming from guice injection.
    */
   @Inject
-  public StandaloneAppFabricServer(CConfiguration configuration,
+  public StandaloneAppFabricServer(CConfiguration cConf,
                                    SConfiguration sConf,
                                    DiscoveryService discoveryService,
                                    SchedulerService schedulerService,
@@ -71,7 +71,7 @@ public class StandaloneAppFabricServer extends AppFabricServer {
                                    PluginService pluginService,
                                    PrivilegesFetcherProxyService privilegesFetcherProxyService,
                                    RouteStore routeStore) {
-    super(configuration, sConf, discoveryService, schedulerService, notificationService, hostname, handlers,
+    super(cConf, sConf, discoveryService, schedulerService, notificationService, hostname, handlers,
           metricsCollectionService, programRuntimeService, applicationLifecycleService,
           programLifecycleService, streamCoordinatorClient, servicesNames, handlerHookNames, defaultNamespaceEnsurer,
           systemArtifactLoader, pluginService, privilegesFetcherProxyService, routeStore);

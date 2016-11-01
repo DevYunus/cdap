@@ -25,7 +25,7 @@ public final class Constants {
 
   public static final String[] FEATURE_TOGGLE_PROPS = {
     Security.SSL_ENABLED,
-    Security.AppFabric.SSL_ENABLED,
+    Security.Ssl.ENABLED,
     Security.ENABLED,
     Explore.EXPLORE_ENABLED,
   };
@@ -730,9 +730,9 @@ public final class Constants {
     /**
      * App Fabric
      */
-    public static final class AppFabric {
+    public static final class Ssl {
       /** Enables SSL for app fabric server. */
-      public static final String SSL_ENABLED = "app.ssl.enabled";
+      public static final String ENABLED = "app.ssl.enabled";
       /** Password for the java keystore. */
       public static final String SSL_KEYSTORE_PASSWORD = "app.ssl.keystore.password";
       /** Type for the java keystore. e.g. JCEKS. */
