@@ -25,7 +25,7 @@ public final class Constants {
 
   public static final String[] FEATURE_TOGGLE_PROPS = {
     Security.SSL_ENABLED,
-    Security.Ssl.ENABLED,
+    Security.Ssl.SSL_INTERNAL_ENABLED,
     Security.ENABLED,
     Explore.EXPLORE_ENABLED,
   };
@@ -722,7 +722,8 @@ public final class Constants {
     public static final String LOGIN_MODULE_CLASS_NAME = "security.authentication.loginmodule.className";
     /** Realm file for Basic Authentication */
     public static final String BASIC_REALM_FILE = "security.authentication.basic.realmfile";
-    /** Enables SSL */
+    /** Enables external SSL */
+    @Deprecated
     public static final String SSL_ENABLED = "ssl.enabled";
     /** Key to mark a discoverable which supports ssl */
     public static final String SSL_DISCOVERABLE_KEY = "ssl";
@@ -731,24 +732,26 @@ public final class Constants {
      * App Fabric
      */
     public static final class Ssl {
-      /** Enables SSL for app fabric server. */
-      public static final String ENABLED = "app.ssl.enabled";
+      /** Enables SSL for external services. */
+      public static final String SSL_EXTERNAL_ENABLED = "ssl.external.enabled";
+      /** Enables SSL for internal services. */
+      public static final String SSL_INTERNAL_ENABLED = "ssl.internal.enabled";
       /** Password for the java keystore. */
-      public static final String SSL_KEYSTORE_PASSWORD = "app.ssl.keystore.password";
+      public static final String SSL_KEYSTORE_PASSWORD = "ssl.internal.keystore.password";
       /** Type for the java keystore. e.g. JCEKS. */
-      public static final String SSL_KEYSTORE_TYPE = "app.ssl.keystore.type";
+      public static final String SSL_KEYSTORE_TYPE = "ssl.internal.keystore.type";
       /** Algorithm used to generate key pair used in SSL certificate generation. */
-      public static final String KEY_PAIR_ALGORITHM = "app.ssl.key.pair.algorithm";
+      public static final String KEY_PAIR_ALGORITHM = "ssl.internal.key.pair.algorithm";
       /** Algorithm used for generating the random number used for SSL certificate. */
-      public static final String SECURE_RANDOM_ALGORITHM = "app.ssl.random.algorithm";
+      public static final String SECURE_RANDOM_ALGORITHM = "ssl.internal.random.algorithm";
       /** Provider for the secure random number generator. */
-      public static final String SECURE_RANDOM_PROVIDER = "app.ssl.random.provider";
+      public static final String SECURE_RANDOM_PROVIDER = "ssl.internal.random.provider";
       /** Validity of the generated SSL certificate. */
-      public static final String CERT_VALIDITY = "app.ssl.cert.validity";
+      public static final String CERT_VALIDITY = "ssl.internal.cert.validity";
       /** Distinguished name to be used while generating the SSL certificate */
-      public static final String CERT_DISTINGUISHED_NAME = "app.ssl.cert.distinguished.name";
+      public static final String CERT_DISTINGUISHED_NAME = "ssl.internal.cert.distinguished.name";
       /** Algorithm used for self signing the generated certificate. */
-      public static final String SIGNATURE_ALGORITHM = "app.ssl.cert.sign.algorithm";
+      public static final String SIGNATURE_ALGORITHM = "ssl.internal.cert.sign.algorithm";
     }
 
     /**

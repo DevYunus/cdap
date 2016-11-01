@@ -44,13 +44,12 @@ import javax.net.ssl.SSLSocket;
  *
  */
 public class AppFabricServerTest {
-  private static DiscoveryServiceClient discoveryServiceClient;
 
   @Test
   public void startStopServer() throws Exception {
     Injector injector = AppFabricTestHelper.getInjector();
     AppFabricServer server = injector.getInstance(AppFabricServer.class);
-    discoveryServiceClient = injector.getInstance(DiscoveryServiceClient.class);
+    DiscoveryServiceClient discoveryServiceClient = injector.getInstance(DiscoveryServiceClient.class);
     Service.State state = server.startAndWait();
     Assert.assertTrue(state == Service.State.RUNNING);
     // Sleep shortly for the discovery
@@ -68,7 +67,7 @@ public class AppFabricServerTest {
   @Test
   public void testSSL() throws IOException {
     CConfiguration cConf = CConfiguration.create();
-    cConf.setBoolean(Constants.Security.Ssl.ENABLED, true);
+    cConf.setBoolean(Constants.Security.Ssl.SSL_INTERNAL_ENABLED, true);
     cConf.setInt(Constants.AppFabric.SERVER_SSL_PORT, 20443);
     SConfiguration sConf = SConfiguration.create();
     sConf.set(Constants.Security.Ssl.SSL_KEYSTORE_PASSWORD, "secret");
@@ -79,7 +78,7 @@ public class AppFabricServerTest {
       }
     });
 
-    discoveryServiceClient = injector.getInstance(DiscoveryServiceClient.class);
+    final DiscoveryServiceClient discoveryServiceClient = injector.getInstance(DiscoveryServiceClient.class);
     AppFabricServer appFabricServer = injector.getInstance(AppFabricServer.class);
     appFabricServer.startAndWait();
     Assert.assertTrue(appFabricServer.isRunning());

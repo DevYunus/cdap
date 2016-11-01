@@ -259,7 +259,7 @@
   </property>
 
   <property>
-    <name>app.ssl.enabled</name>
+    <name>ssl.internal.enabled</name>
     <value>false</value>
     <description>
       Enable SSL between Router and App Fabric
@@ -1821,8 +1821,16 @@
   </property>
 
   <property>
-    <name>ssl.enabled</name>
+    <name>ssl.external.enabled</name>
     <value>false</value>
+    <description>
+      Determines if SSL for external services is enabled
+    </description>
+  </property>
+
+  <property>
+    <name>ssl.enabled</name>
+    <value>${ssl.external.enabled}</value>
     <description>
       Determines if SSL is enabled
     </description>
