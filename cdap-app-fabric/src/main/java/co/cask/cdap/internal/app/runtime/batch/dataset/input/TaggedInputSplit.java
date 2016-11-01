@@ -66,7 +66,7 @@ public class TaggedInputSplit extends InputSplit implements Configurable, Writab
   /**
    * Creates a new TaggedInputSplit.
    *
-   * @param name name of the InputSplit
+   * @param name name of the input to which this InputSplit belongs
    * @param inputSplit The InputSplit to be tagged
    * @param conf The configuration to use
    * @param inputConfigs configurations to use for the InputFormat

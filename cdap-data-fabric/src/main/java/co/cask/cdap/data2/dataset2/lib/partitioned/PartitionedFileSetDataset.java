@@ -122,7 +122,7 @@ public class PartitionedFileSetDataset extends AbstractDataset implements Partit
 
   // this will store the result of filterInputPaths() after it is called (the result is needed by
   // both getInputFormat() and getInputFormatConfiguration(), and we don't want to compute it twice).
-  private AtomicReference<Collection<String>> inputPathsCache = null;
+  private AtomicReference<Collection<PartitionKey>> inputPathsCache = null;
 
   public PartitionedFileSetDataset(DatasetContext datasetContext, String name,
                                    Partitioning partitioning, FileSet fileSet, IndexedTable partitionTable,
@@ -561,17 +561,16 @@ public class PartitionedFileSetDataset extends AbstractDataset implements Partit
     return partitionDetails;
   }
 
-  @VisibleForTesting
-  Collection<String> getPartitionPaths(@Nullable PartitionFilter filter) {
+  private Collection<PartitionKey> getPartitionPaths(@Nullable PartitionFilter filter) {
     // this avoids constructing the Partition object for every partition.
-    final Set<String> paths = Sets.newHashSet();
+    final Set<PartitionKey> partitionKeys = new HashSet<>();
     getPartitions(filter, new PartitionConsumer() {
       @Override
       public void consume(PartitionKey key, String path, @Nullable PartitionMetadata metadata) {
-        paths.add(path);
+        partitionKeys.add(key);
       }
     }, false);
-    return paths;
+    return partitionKeys;
   }
 
   protected void getPartitions(@Nullable PartitionFilter filter, PartitionConsumer consumer) {
@@ -697,23 +696,25 @@ public class PartitionedFileSetDataset extends AbstractDataset implements Partit
   }
 
   /**
-   * Computes the input paths given by the partition filter - if present. Stores the result in a cache and returns it.
+   * Computes and returns the input partition keys given by the partition filter - if present. Otherwise, return null.
+   * Stores the result in a cache and returns it.
    */
-  private Collection<String> filterInputPaths() {
+  @Nullable
+  private Collection<PartitionKey> filterInputPaths() {
     if (inputPathsCache != null) {
       return inputPathsCache.get();
     }
-    Collection<String> inputPaths = computeFilterInputPaths();
+    Collection<PartitionKey> inputPaths = computeFilterInputPaths();
     inputPathsCache = new AtomicReference<>(inputPaths);
     return inputPaths;
   }
 
   /**
-   * If a partition filter was specified, return the input locations of all partitions
+   * If a partition filter was specified, return the partition keys of all partitions
    * matching the filter. Otherwise return null.
    */
   @Nullable
-  protected Collection<String> computeFilterInputPaths() {
+  protected Collection<PartitionKey> computeFilterInputPaths() {
     PartitionFilter filter;
     try {
       filter = PartitionedFileSetArguments.getInputPartitionFilter(runtimeArguments);

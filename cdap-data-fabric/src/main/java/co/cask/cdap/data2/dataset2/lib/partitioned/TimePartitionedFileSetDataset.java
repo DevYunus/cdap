@@ -41,6 +41,7 @@ import com.google.inject.Provider;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -129,17 +130,17 @@ public class TimePartitionedFileSetDataset extends PartitionedFileSetDataset imp
     return partitions;
   }
 
-  private Collection<String> getPartitionPathsByTime(long startTime, long endTime) {
-    final Set<String> paths = Sets.newHashSet();
+  private Collection<PartitionKey> getPartitionPathsByTime(long startTime, long endTime) {
+    final Set<PartitionKey> partitionKeys = new HashSet<>();
     for (PartitionFilter filter : partitionFiltersForTimeRange(startTime, endTime)) {
       super.getPartitions(filter, new PartitionedFileSetDataset.PartitionConsumer() {
         @Override
         public void consume(PartitionKey key, String path, @Nullable PartitionMetadata metadata) {
-          paths.add(path);
+          partitionKeys.add(key);
         }
       });
     }
-    return paths;
+    return partitionKeys;
   }
 
   @Override
@@ -154,7 +155,7 @@ public class TimePartitionedFileSetDataset extends PartitionedFileSetDataset imp
 
   @Override
   @Nullable
-  protected Collection<String> computeFilterInputPaths() {
+  protected Collection<PartitionKey> computeFilterInputPaths() {
     Long startTime = TimePartitionedFileSetArguments.getInputStartTime(getRuntimeArguments());
     Long endTime = TimePartitionedFileSetArguments.getInputEndTime(getRuntimeArguments());
     if (startTime == null && endTime == null) {
