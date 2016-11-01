@@ -23,9 +23,6 @@ import co.cask.cdap.common.discovery.EndpointStrategy;
 import co.cask.cdap.common.discovery.RandomEndpointStrategy;
 import co.cask.cdap.internal.AppFabricTestHelper;
 import co.cask.cdap.security.server.LDAPLoginModule;
-import co.cask.common.http.HttpRequest;
-import co.cask.common.http.HttpRequests;
-import co.cask.common.http.HttpResponse;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Iterables;
@@ -35,41 +32,24 @@ import com.google.inject.Injector;
 import org.apache.twill.discovery.Discoverable;
 import org.apache.twill.discovery.DiscoveryServiceClient;
 import org.apache.twill.discovery.ServiceDiscovered;
-import org.jboss.netty.handler.codec.http.HttpMethod;
-import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.jboss.netty.handler.ssl.NotSslRecordException;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.TimeUnit;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLSocket;
 
 /**
  *
  */
 public class AppFabricServerTest {
-  private static AppFabricServer server;
   private static DiscoveryServiceClient discoveryServiceClient;
-
-  @BeforeClass
-  public static void before() throws Exception {
-
-  }
 
   @Test
   public void startStopServer() throws Exception {
     Injector injector = AppFabricTestHelper.getInjector();
-    server = injector.getInstance(AppFabricServer.class);
+    AppFabricServer server = injector.getInstance(AppFabricServer.class);
     discoveryServiceClient = injector.getInstance(DiscoveryServiceClient.class);
     Service.State state = server.startAndWait();
     Assert.assertTrue(state == Service.State.RUNNING);
