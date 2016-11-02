@@ -16,9 +16,8 @@
 package co.cask.cdap.internal.app.preview;
 
 import co.cask.cdap.api.preview.DebugLogger;
+import co.cask.cdap.app.store.preview.PreviewStore;
 import co.cask.cdap.proto.id.ApplicationId;
-
-import javax.annotation.Nullable;
 
 /**
  * Default implementation of {@link DebugLogger}
@@ -27,15 +26,17 @@ public class DefaultDebugLogger implements DebugLogger {
 
   private final String loggerName;
   private final ApplicationId applicationId;
+  private final PreviewStore previewStore;
 
-  public DefaultDebugLogger(String loggerName, @Nullable ApplicationId applicationId) {
+  public DefaultDebugLogger(String loggerName, ApplicationId applicationId, PreviewStore previewStore) {
     this.loggerName = loggerName;
     this.applicationId = applicationId;
+    this.previewStore = previewStore;
   }
 
   @Override
   public void info(String propertyName, Object propertyValue) {
-    // no-op until PreviewStore is implemented.
+    previewStore.put(applicationId, loggerName, propertyName, propertyValue);
   }
 
   @Override
