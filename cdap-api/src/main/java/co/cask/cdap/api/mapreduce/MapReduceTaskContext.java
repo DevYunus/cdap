@@ -1,5 +1,3 @@
-package co.cask.cdap.api.mapreduce;
-
 /*
  * Copyright © 2014-2015 Cask Data, Inc.
  *
@@ -15,6 +13,8 @@ package co.cask.cdap.api.mapreduce;
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
+package co.cask.cdap.api.mapreduce;
 
 import co.cask.cdap.api.RuntimeContext;
 import co.cask.cdap.api.ServiceDiscoverer;

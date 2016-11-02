@@ -155,12 +155,12 @@ public class TimePartitionedFileSetDataset extends PartitionedFileSetDataset imp
 
   @Override
   @Nullable
-  protected Collection<PartitionKey> computeFilterInputPaths() {
+  protected Collection<PartitionKey> computeInputKeys() {
     Long startTime = TimePartitionedFileSetArguments.getInputStartTime(getRuntimeArguments());
     Long endTime = TimePartitionedFileSetArguments.getInputEndTime(getRuntimeArguments());
     if (startTime == null && endTime == null) {
       // no times specified; perhaps a partition filter was specified. super will deal with that
-      return super.computeFilterInputPaths();
+      return super.computeInputKeys();
     }
     if (startTime == null) {
       throw new DataSetException("Start time for input time range must be given as argument.");

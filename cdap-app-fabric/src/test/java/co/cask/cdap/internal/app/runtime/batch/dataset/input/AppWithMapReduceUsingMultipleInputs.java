@@ -32,6 +32,7 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -151,10 +152,10 @@ public class AppWithMapReduceUsingMultipleInputs extends AbstractApplication {
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
-      // assert that the user gets FileInputSplit (as opposed to the TaggedInputSplit from the context
+      // assert that the user gets FileInputSplit (as opposed to the MultiInputTaggedSplit) from the context
       Preconditions.checkArgument(context.getInputSplit() instanceof FileSplit);
       try {
-        // assert that the user gets the TextInputFormat, as opposed to the DelegatingInputFormat from the context
+        // assert that the user gets the TextInputFormat, as opposed to the MultiInputFormat from the context
         Preconditions.checkArgument(context.getInputFormatClass() == TextInputFormat.class);
       } catch (ClassNotFoundException e) {
         Throwables.propagate(e);

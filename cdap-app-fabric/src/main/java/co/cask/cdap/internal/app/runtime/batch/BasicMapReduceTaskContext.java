@@ -24,6 +24,8 @@ import co.cask.cdap.api.data.batch.BatchWritable;
 import co.cask.cdap.api.data.batch.Split;
 import co.cask.cdap.api.data.batch.SplitReader;
 import co.cask.cdap.api.dataset.Dataset;
+import co.cask.cdap.api.dataset.lib.PartitionKey;
+import co.cask.cdap.api.dataset.lib.partitioned.PartitionKeyCodec;
 import co.cask.cdap.api.mapreduce.MapReduceSpecification;
 import co.cask.cdap.api.mapreduce.MapReduceTaskContext;
 import co.cask.cdap.api.metrics.MetricsCollectionService;
@@ -36,6 +38,7 @@ import co.cask.cdap.app.runtime.ProgramOptions;
 import co.cask.cdap.common.conf.Constants;
 import co.cask.cdap.data2.dataset2.DatasetFramework;
 import co.cask.cdap.data2.metadata.lineage.AccessType;
+import co.cask.cdap.internal.app.namespace.DefaultNamespaceAdmin;
 import co.cask.cdap.internal.app.runtime.AbstractContext;
 import co.cask.cdap.internal.app.runtime.DefaultTaskLocalizationContext;
 import co.cask.cdap.internal.app.runtime.batch.dataset.CloseableBatchWritable;
@@ -51,18 +54,31 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.TaskInputOutputContext;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.tephra.Transaction;
 import org.apache.tephra.TransactionAware;
 import org.apache.tephra.TransactionSystemClient;
 import org.apache.twill.discovery.DiscoveryServiceClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nullable;
 
@@ -76,6 +92,8 @@ import javax.annotation.Nullable;
  */
 public class BasicMapReduceTaskContext<KEYOUT, VALUEOUT> extends AbstractContext
   implements MapReduceTaskContext<KEYOUT, VALUEOUT> {
+
+  private static final Logger LOG = LoggerFactory.getLogger(DefaultNamespaceAdmin.class);
 
   private final MapReduceSpecification spec;
   private final WorkflowProgramInfo workflowProgramInfo;
@@ -129,6 +147,43 @@ public class BasicMapReduceTaskContext<KEYOUT, VALUEOUT> extends AbstractContext
     return String.format("name=%s,=%s", spec.getName(), super.toString());
   }
 
+  private static final Gson GSON =
+    new GsonBuilder().registerTypeAdapter(PartitionKey.class, new PartitionKeyCodec()).create();
+
+  private static final Type STRING_PARTITION_KEY_MAP_TYPE = new TypeToken<Map<String, PartitionKey>>() { }.getType();
+
+  @Nullable
+  public PartitionKey getPartitionKey() {
+    if (!(context instanceof Mapper.Context)) {
+      return null;
+    }
+    InputSplit inputSplit = ((Mapper.Context) context).getInputSplit();
+    if (!(inputSplit instanceof FileSplit)) {
+      // need to support FileSplit (old version)?
+      return null;
+    }
+    Path inputPath = ((FileSplit) inputSplit).getPath();
+    LOG.info("isUriPathAbsolute: {}", inputPath.isUriPathAbsolute());
+    LOG.info("toUri: {}", inputPath.toUri());
+
+    String mappingString = context.getConfiguration().get("path.to.partition.mapping");
+    Map<String, PartitionKey> pathToPartitionMapping =
+      GSON.fromJson(Objects.requireNonNull(mappingString), STRING_PARTITION_KEY_MAP_TYPE);
+    return getPartitionKey(pathToPartitionMapping, Paths.get(inputPath.toUri()));
+  }
+
+  private PartitionKey getPartitionKey(Map<String, PartitionKey> pathToPartitionMapping, java.nio.file.Path inputPath) {
+    if (pathToPartitionMapping.containsKey(inputPath.toUri().getPath())) {
+      return pathToPartitionMapping.get(inputPath.toUri().getPath());
+    }
+    for (Map.Entry<String, PartitionKey> pathEntry : pathToPartitionMapping.entrySet()) {
+      if (inputPath.startsWith(Paths.get(pathEntry.getKey()))) {
+        return pathEntry.getValue();
+      }
+    }
+    return null;
+  }
+
   @Override
   public <K, V> void write(String namedOutput, K key, V value) throws IOException, InterruptedException {
     if (multipleOutputs == null) {
@@ -154,6 +209,8 @@ public class BasicMapReduceTaskContext<KEYOUT, VALUEOUT> extends AbstractContext
   public void setHadoopContext(TaskInputOutputContext<?, ?, KEYOUT, VALUEOUT> context) {
     this.multipleOutputs = new MultipleOutputs(context);
     this.context = context;
+
+    LOG.info("partitionKey: {}", getPartitionKey());
   }
 
   public void setInputName(String inputName) {
