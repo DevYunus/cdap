@@ -128,10 +128,13 @@
     "modulePaths": [
       "./app/cdap/"
     ],
+    "enableAutomock": true,
     "moduleNameMapper": {
       "^components": "<rootDir>/components",
       "^services": "<rootDir>/services",
-      "^api": "<rootDir>/api"
+      "^api": "<rootDir>/api",
+      "^mocks": "<rootDir>/__mocks__",
+      "^.+\\.less$": "<rootDir>/__mocks__/styleMocks.js"
     }
   }
 }

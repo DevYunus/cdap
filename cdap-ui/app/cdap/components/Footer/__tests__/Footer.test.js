@@ -13,13 +13,24 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
-import DataSourceConfigurer from 'services/datasource/DataSourceConfigurer';
-import {apiCreator} from '../../services/resource-helper';
-
-let dataSrc = DataSourceConfigurer.getInstance();
-let basepath = '/namespaces/:namespace/apps/:appId';
-
-export const MyPipelineApi = {
-  publish: apiCreator(dataSrc, 'PUT', 'REQUEST', basepath)
-};
+import React from 'react';
+import { mount } from 'enzyme';
+import Footer from 'components/Footer';
+describe('Footer Unit tests - ', () => {
+  it('Should Render', () => {
+    const footer = mount(
+      <Footer
+        copyrightYear="2016"
+        version="4.0.0"
+      />
+    );
+    expect(footer.instance().version).toBe('4.0.0');
+  });
+  it('Should handle invalid cases with default values', () => {
+    const footer = mount(
+      <Footer />
+    );
+    expect(footer.instance().version).toBe('--unknown--');
+    expect(footer.instance().copyrightYear).toBe(new Date().getFullYear());
+  });
+});
