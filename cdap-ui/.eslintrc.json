@@ -36,7 +36,9 @@
     "describe": true,
     "it": true,
     "expect": true,
-    "jest": true
+    "jest": true,
+    "beforeEach": true,
+    "afterEach": true
   },
   "plugins": ["react", "babel"],
   "extends": ["eslint:recommended", "plugin:react/recommended"]
