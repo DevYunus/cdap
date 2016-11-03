@@ -17,13 +17,17 @@
 import React from 'react';
 import shortid from 'shortid';
 import {mount} from 'enzyme';
-import MarketPlaceEntity from 'components/MarketPlaceEntity';
 
-jest.setMock('api/market', require('../../../api/market/__mocks__/market.js'));
+jest.useFakeTimers();
+
+jest.mock('api/market');
 jest.mock('api/stream');
 jest.mock('api/userstore');
 jest.mock('api/pipeline');
 jest.mock('api/namespace');
+import {MyMarketApi} from 'api/market';
+
+import MarketPlaceEntity from 'components/MarketPlaceEntity';
 
 const entity = {
   name: 'SampleEntityName',
@@ -35,16 +39,138 @@ const entity = {
   created: Date.now(),
   cdapVersion: '4.0.0'
 };
+const entityDetail = {
+  "specVersion": "1.0",
+  "label": "Access Log Sample",
+  "description": "Sample access logs in Combined Log Format (CLF)",
+  "author": "Cask",
+  "org": "Cask Data, Inc.",
+  "created": 1473901763,
+  "categories": ["datapack"],
+  "cdapVersion": "[4.0.0-SNAPSHOT,4.1.0)",
+  "actions": [{
+      "type": "load_datapack",
+      "label": "Access Logs",
+      "arguments": [{
+          "name": "name",
+          "value": "accessLogs"
+      }, {
+          "name": "files",
+          "value": ["access.txt"]
+      }]
+  }]
+};
+const entityDetail2 = {
+  "specVersion": "1.0",
+  "label": "Access Log Sample",
+  "description": "Sample access logs in Combined Log Format (CLF)",
+  "author": "Cask",
+  "org": "Cask Data, Inc.",
+  "created": 1473901763,
+  "categories": ["datapack"],
+  "cdapVersion": "[4.0.0-SNAPSHOT,4.1.0)",
+  "actions": [{
+      "type": "load_datapack",
+      "label": "Access Logs",
+      "arguments": [{
+          "name": "name",
+          "value": "accessLogs"
+      }, {
+          "name": "files",
+          "value": ["access.txt"]
+      }]
+  },{
+      "type": "load_datapack",
+      "label": "Access Logs",
+      "arguments": [{
+          "name": "name",
+          "value": "accessLogs"
+      }, {
+          "name": "files",
+          "value": ["access.txt"]
+      }]
+  },
+  {
+      "type": "load_datapack",
+      "label": "Access Logs",
+      "arguments": [{
+          "name": "name",
+          "value": "accessLogs"
+      }, {
+          "name": "files",
+          "value": ["access.txt"]
+      }]
+  }]
+};
+
 const entityId = shortid.generate();
 
 describe('MarketplaceEntity Unit tests', () => {
-  it('Should render', () => {
-    const marketPlaceEntity = mount(
+  let marketPlaceEntity;
+  beforeEach(() => {
+    marketPlaceEntity = mount(
       <MarketPlaceEntity
         entity={entity}
         entityId={entityId}
       />
     );
+  });
+  afterEach(() => {
+    marketPlaceEntity.unmount();
+  });
+  it('Should render', () => {
     expect(marketPlaceEntity.find('.market-place-package-card').length).toBe(1);
+    expect(marketPlaceEntity.find('.market-place-package-card .card-body').length).toBe(1);
+    expect(marketPlaceEntity.find('.market-place-package-card .card-body .package-icon-container').length).toBe(1);
+  });
+
+  it('Should have appropriate state', () => {
+    let instance = marketPlaceEntity.instance();
+    expect(instance.state.expandedMode).toBe(false);
+    expect(typeof instance.state.entityDetail).toBe('object');
+    expect(instance.state.performSingleAction).toBe(false);
+    expect(instance.props.entity).toBe(entity);
+    expect(instance.props.entityId).toBe(entityId);
+  });
+
+  it('Should show the overlay on click', () => {
+    let packageContainer = marketPlaceEntity.find('.market-place-package-card');
+    MyMarketApi.__setEntityDetail(entityDetail);
+    packageContainer.simulate('click');
+    jest.runAllTimers();
+    marketPlaceEntity.update();
+    expect(marketPlaceEntity.find('.market-place-package-card .expanded').length).toBe(1);
+
+  });
+  it('Should update the state appropriately on click', () => {
+    let packageContainer = marketPlaceEntity.find('.market-place-package-card');
+    MyMarketApi.__setEntityDetail(entityDetail);
+    packageContainer.simulate('click');
+    jest.runAllTimers();
+    marketPlaceEntity.update();
+    expect(marketPlaceEntity.state('expandedMode')).toBe(true);
+    expect(marketPlaceEntity.state('entityDetail')).toBe(entityDetail);
+    expect(marketPlaceEntity.state('entityDetail').actions.length).toBe(1);
+  });
+  it('Should show appropriate overlay template for multiple actions', () => {
+    let packageContainer = marketPlaceEntity.find('.market-place-package-card');
+    MyMarketApi.__setEntityDetail(entityDetail2);
+    packageContainer.simulate('click');
+    jest.runAllTimers();
+    marketPlaceEntity.update();
+    expect(marketPlaceEntity.find('.market-place-package-card .expanded').length).toBe(1);
+    expect(marketPlaceEntity.find('.market-place-package-card .expanded .market-entity-actions').length).toBe(1);
+    expect(marketPlaceEntity.find('.market-place-package-card .expanded .market-entity-actions .action-container').length).toBe(3);
+  });
+
+  it('Should update the state appropriately on click for multiple actions container', () => {
+    let packageContainer = marketPlaceEntity.find('.market-place-package-card');
+    MyMarketApi.__setEntityDetail(entityDetail2);
+    packageContainer.simulate('click');
+    jest.runAllTimers();
+    marketPlaceEntity.update();
+    expect(marketPlaceEntity.state('expandedMode')).toBe(true);
+    expect(marketPlaceEntity.state('entityDetail')).toBe(entityDetail2);
+    expect(marketPlaceEntity.state('entityDetail').actions.length).toBe(3);
   });
 });
