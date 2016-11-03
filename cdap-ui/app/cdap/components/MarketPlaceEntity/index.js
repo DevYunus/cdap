@@ -40,6 +40,7 @@ export default class MarketPlaceEntity extends Component {
         });
       }
     });
+    this.toggleDetailedMode = this.toggleDetailedMode.bind(this);
   }
   componentWillUnmount() {
     this.unsub();
@@ -120,7 +121,7 @@ export default class MarketPlaceEntity extends Component {
               <div className="text-right">
                 <button
                   className="btn btn-default"
-                  onClick={this.toggleDetailedMode.bind(this)}
+                  onClick={this.toggleDetailedMode}
                 >
                   Cancel
                 </button>
@@ -144,7 +145,7 @@ export default class MarketPlaceEntity extends Component {
               </button>
               <button
                 className="btn btn-default"
-                onClick={this.toggleDetailedMode.bind(this)}
+                onClick={this.toggleDetailedMode}
               >
                 Cancel
               </button>
@@ -182,7 +183,9 @@ export default class MarketPlaceEntity extends Component {
             onClick={this.openDetailedMode.bind(this)}
           >
             <div className="clearfix">
-              <div className="package-icon-container">
+              <div
+                className="package-icon-container"
+                onClick={this.toggleDetailedMode}>
                 <img src={MyMarketApi.getIcon(this.props.entity)} />
               </div>
 
@@ -229,6 +232,7 @@ export default class MarketPlaceEntity extends Component {
     return (
       <div
         className={classnames("market-place-package-card", {[positionClassName + ' expanded']: this.state.expandedMode})}
+        onClick={this.toggleDetailedMode}
         ref={(ref)=> this.packageCardRef = ref}
       >
         <ReactCSSTransitionGroup
