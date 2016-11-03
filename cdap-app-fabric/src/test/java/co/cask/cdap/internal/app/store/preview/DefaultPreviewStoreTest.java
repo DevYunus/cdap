@@ -61,33 +61,33 @@ public class DefaultPreviewStoreTest {
     ApplicationId secondApplicationId = new ApplicationId(NamespaceMeta.DEFAULT.getName(), secondApplication);
 
     // put data for the first application
-    store.put(firstApplicationId, "mylogger", "key1", "value1");
-    store.put(firstApplicationId, "mylogger", "key1", 2);
-    store.put(firstApplicationId, "mylogger", "key2", 3);
+    store.put(firstApplicationId, "mytracer", "key1", "value1");
+    store.put(firstApplicationId, "mytracer", "key1", 2);
+    store.put(firstApplicationId, "mytracer", "key2", 3);
     Map<Object, Object> propertyMap = new HashMap<>();
     propertyMap.put("key1", "value1");
     propertyMap.put(1, "value2");
-    store.put(firstApplicationId, "mylogger", "key2", propertyMap);
-    store.put(firstApplicationId, "myanotherlogger", "key2", 3);
+    store.put(firstApplicationId, "mytracer", "key2", propertyMap);
+    store.put(firstApplicationId, "myanothertracer", "key2", 3);
 
     // put data for the second application
-    store.put(secondApplicationId, "mylogger", "key1", "value1");
+    store.put(secondApplicationId, "mytracer", "key1", "value1");
 
-    // get the data for first application and logger name "mylogger"
-    Map<String, List<String>> firstApplicationData = store.get(firstApplicationId, "mylogger");
+    // get the data for first application and logger name "mytracer"
+    Map<String, List<String>> firstApplicationData = store.get(firstApplicationId, "mytracer");
     // key1 and key2 are two keys inserted for the first application.
     Assert.assertEquals(2, firstApplicationData.size());
     Assert.assertEquals(Arrays.asList("\"value1\"", "2"), firstApplicationData.get("key1"));
     Assert.assertEquals(Arrays.asList("3", GSON.toJson(propertyMap)), firstApplicationData.get("key2"));
 
-    // get the data for second application and logger name "mylogger"
-    Map<String, List<String>> secondApplicationData = store.get(secondApplicationId, "mylogger");
+    // get the data for second application and logger name "mytracer"
+    Map<String, List<String>> secondApplicationData = store.get(secondApplicationId, "mytracer");
     Assert.assertEquals(1, secondApplicationData.size());
     Assert.assertEquals(Collections.singletonList("\"value1\""), secondApplicationData.get("key1"));
 
     // remove the data from first application
     store.remove(firstApplicationId);
-    firstApplicationData = store.get(firstApplicationId, "mylogger");
+    firstApplicationData = store.get(firstApplicationId, "mytracer");
     Assert.assertEquals(0, firstApplicationData.size());
   }
 }

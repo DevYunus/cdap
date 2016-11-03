@@ -15,17 +15,17 @@
  */
 package co.cask.cdap.internal.app.preview;
 
-import co.cask.cdap.api.preview.DebugLogger;
-import co.cask.cdap.app.preview.DebugLoggerFactory;
+import co.cask.cdap.api.preview.DataTracer;
+import co.cask.cdap.app.preview.DataTracerFactory;
 import co.cask.cdap.proto.id.ApplicationId;
 
 /**
- * Implementation of {@link DebugLoggerFactory} which creates {@link NoopDebugLogger}
+ * Implementation of {@link DataTracerFactory} which creates {@link NoopDataTracer}
  */
-public class NoopDebugLoggerFactory implements DebugLoggerFactory {
+public class NoopDataTracerFactory implements DataTracerFactory {
 
   @Override
-  public DebugLogger getLogger(String loggerName, ApplicationId applicationId) {
-    return new NoopDebugLogger(loggerName);
+  public DataTracer getTracer(String tracerName, ApplicationId applicationId) {
+    return new NoopDataTracer(tracerName);
   }
 }

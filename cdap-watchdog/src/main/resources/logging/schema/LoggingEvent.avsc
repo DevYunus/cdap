@@ -44,7 +44,7 @@
         "type" : [ "null", "string" ],
         "default" : null
     }, {
-        "name" : "loggerName",
+        "name" : "tracerName",
         "type" : [ "null", "string" ],
         "default" : null
     }, {

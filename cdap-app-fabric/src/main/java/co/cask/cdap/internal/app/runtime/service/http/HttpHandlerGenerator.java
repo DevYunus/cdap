@@ -261,13 +261,13 @@ final class HttpHandlerGenerator {
    * Generates a static Logger field for logging and a static initialization block to initialize the logger.
    */
   private void generateLogger(Type classType, ClassWriter classWriter) {
-    // private static final Logger LOG = LoggerFactory.getLogger(classType);
+    // private static final Logger LOG = LoggerFactory.getTracer(classType);
     classWriter.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_STATIC | Opcodes.ACC_FINAL, "LOG",
                            Type.getType(Logger.class).getDescriptor(), null, null);
     Method init = Methods.getMethod(void.class, "<clinit>");
     GeneratorAdapter mg = new GeneratorAdapter(Opcodes.ACC_STATIC, init, null, null, classWriter);
     mg.visitLdcInsn(classType);
-    mg.invokeStatic(Type.getType(LoggerFactory.class), Methods.getMethod(Logger.class, "getLogger", Class.class));
+    mg.invokeStatic(Type.getType(LoggerFactory.class), Methods.getMethod(Logger.class, "getTracer", Class.class));
     mg.putStatic(classType, "LOG", Type.getType(Logger.class));
     mg.returnValue();
     mg.endMethod();

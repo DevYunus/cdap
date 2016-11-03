@@ -32,12 +32,12 @@ import co.cask.cdap.api.metrics.MetricsContext;
 import co.cask.cdap.api.metrics.NoopMetricsContext;
 import co.cask.cdap.api.plugin.PluginContext;
 import co.cask.cdap.api.plugin.PluginProperties;
-import co.cask.cdap.api.preview.DebugLogger;
+import co.cask.cdap.api.preview.DataTracer;
 import co.cask.cdap.api.security.store.SecureStore;
 import co.cask.cdap.api.security.store.SecureStoreData;
 import co.cask.cdap.api.security.store.SecureStoreManager;
 import co.cask.cdap.app.metrics.ProgramUserMetrics;
-import co.cask.cdap.app.preview.DebugLoggerFactory;
+import co.cask.cdap.app.preview.DataTracerFactory;
 import co.cask.cdap.app.program.Program;
 import co.cask.cdap.app.runtime.ProgramOptions;
 import co.cask.cdap.app.services.AbstractServiceDiscoverer;
@@ -49,10 +49,9 @@ import co.cask.cdap.data2.dataset2.MultiThreadDatasetCache;
 import co.cask.cdap.data2.dataset2.SingleThreadDatasetCache;
 import co.cask.cdap.data2.metadata.lineage.AccessType;
 import co.cask.cdap.data2.transaction.Transactions;
-import co.cask.cdap.internal.app.preview.NoopDebugLoggerFactory;
+import co.cask.cdap.internal.app.preview.NoopDataTracerFactory;
 import co.cask.cdap.internal.app.program.ProgramTypeMetricTag;
 import co.cask.cdap.internal.app.runtime.plugin.PluginInstantiator;
-import co.cask.cdap.proto.id.ApplicationId;
 import co.cask.cdap.proto.id.EntityId;
 import co.cask.cdap.proto.id.NamespaceId;
 import co.cask.cdap.proto.id.ProgramId;
@@ -92,7 +91,7 @@ public abstract class AbstractContext extends AbstractServiceDiscoverer
   private final Transactional transactional;
   protected final DynamicDatasetCache datasetCache;
 
-  private DebugLoggerFactory debugLoggerFactory = new NoopDebugLoggerFactory();
+  private DataTracerFactory dataTracerFactory = new NoopDataTracerFactory();
 
   /**
    * Constructs a context without plugin support.
@@ -363,12 +362,12 @@ public abstract class AbstractContext extends AbstractServiceDiscoverer
   }
 
   @Override
-  public DebugLogger getLogger(String loggerName) {
-    return debugLoggerFactory.getLogger(loggerName, program.getId().getParent());
+  public DataTracer getTracer(String tracerName) {
+    return dataTracerFactory.getTracer(tracerName, program.getId().getParent());
   }
 
   @Inject(optional = true)
-  private void setDebugLoggerFactory(@Named("DebugLoggerFactory") DebugLoggerFactory debugLoggerFactory) {
-    this.debugLoggerFactory = debugLoggerFactory;
+  private void setDataTracerFactory(@Named("DataTracerFactory") DataTracerFactory dataTracerFactory) {
+    this.dataTracerFactory = dataTracerFactory;
   }
 }

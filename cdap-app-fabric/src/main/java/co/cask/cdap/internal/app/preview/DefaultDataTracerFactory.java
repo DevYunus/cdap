@@ -15,26 +15,26 @@
  */
 package co.cask.cdap.internal.app.preview;
 
-import co.cask.cdap.api.preview.DebugLogger;
-import co.cask.cdap.app.preview.DebugLoggerFactory;
+import co.cask.cdap.api.preview.DataTracer;
+import co.cask.cdap.app.preview.DataTracerFactory;
 import co.cask.cdap.app.store.preview.PreviewStore;
 import co.cask.cdap.proto.id.ApplicationId;
 import com.google.inject.Inject;
 
 /**
- * Default implementation of {@link DebugLoggerFactory}
+ * Default implementation of {@link DataTracerFactory}
  */
-public class DefaultDebugLoggerFactory implements DebugLoggerFactory {
+public class DefaultDataTracerFactory implements DataTracerFactory {
 
   private final PreviewStore previewStore;
 
   @Inject
-  public DefaultDebugLoggerFactory(PreviewStore previewStore) {
+  public DefaultDataTracerFactory(PreviewStore previewStore) {
     this.previewStore = previewStore;
   }
 
   @Override
-  public DebugLogger getLogger(String loggerName, ApplicationId applicationId) {
-    return new DefaultDebugLogger(loggerName, applicationId, previewStore);
+  public DataTracer getTracer(String tracerName, ApplicationId applicationId) {
+    return new DefaultDataTracer(tracerName, applicationId, previewStore);
   }
 }

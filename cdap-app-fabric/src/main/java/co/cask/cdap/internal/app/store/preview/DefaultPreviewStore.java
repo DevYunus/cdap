@@ -55,9 +55,7 @@ public class DefaultPreviewStore implements PreviewStore {
   private final Transactional transactional;
 
   @Inject
-  public DefaultPreviewStore(final TransactionExecutorFactory txExecutorFactory, DatasetFramework framework,
-                             TransactionSystemClient txClient) {
-
+  public DefaultPreviewStore(DatasetFramework framework, TransactionSystemClient txClient) {
     this.dsFramework = framework;
     this.transactional = Transactions.createTransactionalWithRetry(
       Transactions.createTransactional(new MultiThreadDatasetCache(
@@ -68,13 +66,13 @@ public class DefaultPreviewStore implements PreviewStore {
   }
 
   @Override
-  public void put(final ApplicationId applicationId, final String loggerName, final String propertyName,
+  public void put(final ApplicationId applicationId, final String tracerName, final String propertyName,
                   final Object value) {
     try {
       transactional.execute(new TxRunnable() {
         @Override
         public void run(DatasetContext context) throws Exception {
-          getPreviewDataset(context).put(applicationId, loggerName, propertyName, value);
+          getPreviewDataset(context).put(applicationId, tracerName, propertyName, value);
         }
       });
     } catch (TransactionFailureException e) {
@@ -83,12 +81,12 @@ public class DefaultPreviewStore implements PreviewStore {
   }
 
   @Override
-  public Map<String, List<String>> get(final ApplicationId applicationId, final String loggerName) {
+  public Map<String, List<String>> get(final ApplicationId applicationId, final String tracerName) {
     try {
       return Transactions.execute(transactional, new TxCallable<Map<String, List<String>>>() {
         @Override
         public Map<String, List<String>> call(DatasetContext context) throws Exception {
-          return getPreviewDataset(context).get(applicationId, loggerName);
+          return getPreviewDataset(context).get(applicationId, tracerName);
         }
       });
     } catch (TransactionFailureException e) {

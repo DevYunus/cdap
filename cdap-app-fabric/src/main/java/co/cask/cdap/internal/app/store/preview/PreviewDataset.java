@@ -48,17 +48,17 @@ public class PreviewDataset extends AbstractDataset {
     this.table = table;
   }
 
-  void put(ApplicationId applicationId, String loggerName, String propertyName, Object value) {
+  void put(ApplicationId applicationId, String tracerName, String propertyName, Object value) {
     MDSKey mdsKey = new MDSKey.Builder().add(applicationId.getNamespace())
-      .add(applicationId.getApplication()).add(loggerName).add(COUNT_RECORD_TYPE).build();
+      .add(applicationId.getApplication()).add(tracerName).add(COUNT_RECORD_TYPE).build();
     long recordCount = table.incrementAndGet(mdsKey.getKey(), COUNT_RECORD_TYPE, 1L);
 
     mdsKey = new MDSKey.Builder().add(applicationId.getNamespace())
-      .add(applicationId.getApplication()).add(loggerName).add(DATA_RECORD_TYPE).add(recordCount).build();
+      .add(applicationId.getApplication()).add(tracerName).add(DATA_RECORD_TYPE).add(recordCount).build();
 
     byte[][] columns = new byte[][] { LOGGER, PROPERTY, VALUE };
     byte[][] values = new byte[][] {
-      Bytes.toBytes(loggerName),
+      Bytes.toBytes(tracerName),
       Bytes.toBytes(propertyName),
       Bytes.toBytes(GSON.toJson(value))
     };
@@ -66,9 +66,9 @@ public class PreviewDataset extends AbstractDataset {
     table.put(mdsKey.getKey(), columns, values);
   }
 
-  Map<String, List<String>> get(ApplicationId applicationId, String loggerName) {
+  Map<String, List<String>> get(ApplicationId applicationId, String tracerName) {
     byte[] startRowKey = new MDSKey.Builder().add(applicationId.getNamespace())
-      .add(applicationId.getApplication()).add(loggerName).add(DATA_RECORD_TYPE).build().getKey();
+      .add(applicationId.getApplication()).add(tracerName).add(DATA_RECORD_TYPE).build().getKey();
     byte[] stopRowKey = new MDSKey(Bytes.stopKeyForPrefix(startRowKey)).getKey();
 
     Map<String, List<String>> result = new HashMap<>();

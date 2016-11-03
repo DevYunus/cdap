@@ -15,17 +15,17 @@
  */
 package co.cask.cdap.internal.app.preview;
 
-import co.cask.cdap.api.preview.DebugLogger;
+import co.cask.cdap.api.preview.DataTracer;
 
 /**
- * Implementation of the {@link DebugLogger} which logs nothing.
+ * Implementation of the {@link DataTracer} which logs nothing.
  */
-public class NoopDebugLogger implements DebugLogger {
+public class NoopDataTracer implements DataTracer {
 
-  private final String loggerName;
+  private final String tracerName;
 
-  public NoopDebugLogger(String loggerName) {
-    this.loggerName = loggerName;
+  public NoopDataTracer(String tracerName) {
+    this.tracerName = tracerName;
   }
 
   @Override
@@ -35,7 +35,7 @@ public class NoopDebugLogger implements DebugLogger {
 
   @Override
   public String getName() {
-    return loggerName;
+    return tracerName;
   }
 
   @Override

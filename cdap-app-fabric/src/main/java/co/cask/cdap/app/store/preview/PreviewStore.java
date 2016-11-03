@@ -16,7 +16,7 @@
 package co.cask.cdap.app.store.preview;
 
 import co.cask.cdap.api.dataset.DatasetManagementException;
-import co.cask.cdap.api.preview.DebugLogger;
+import co.cask.cdap.api.preview.DataTracer;
 import co.cask.cdap.proto.id.ApplicationId;
 
 import java.io.IOException;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Interface used by {@link DebugLogger} to store the preview data.
+ * Interface used by {@link DataTracer} to store the preview data.
  */
 public interface PreviewStore {
 
@@ -32,23 +32,23 @@ public interface PreviewStore {
    * Add the preview data.
    *
    * @param applicationId the id of the program which is logging the preview data
-   * @param loggerName the name of the logger used to log the preview data
+   * @param tracerName the name of the logger used to put the preview data
    * @param propertyName the name of the property for which value is being added
    * @param value the value to be added
    */
-  void put(ApplicationId applicationId, String loggerName, String propertyName, Object value);
+  void put(ApplicationId applicationId, String tracerName, String propertyName, Object value);
 
   /**
    * Get the preview data associated with the given application id.
    *
    * @param applicationId the id of the preview for which preview data to be fetched
-   * @param loggerName the name of the logger used to log the preview data
-   * @return the {@link Map} of property and associated values logged for the program
+   * @param tracerName the name of the tracer used to put the preview data
+   * @return the {@link Map} of property and associated values for the program
    */
-  Map<String, List<String>> get(ApplicationId applicationId, String loggerName);
+  Map<String, List<String>> get(ApplicationId applicationId, String tracerName);
 
   /**
-   * Removes the preview data logged by specified application id
+   * Removes the preview data stored by specified application id
    *
    * @param applicationId the id of the preview for which the data to be removed
    */

@@ -15,33 +15,33 @@
  */
 package co.cask.cdap.internal.app.preview;
 
-import co.cask.cdap.api.preview.DebugLogger;
+import co.cask.cdap.api.preview.DataTracer;
 import co.cask.cdap.app.store.preview.PreviewStore;
 import co.cask.cdap.proto.id.ApplicationId;
 
 /**
- * Default implementation of {@link DebugLogger}
+ * Default implementation of {@link DataTracer}
  */
-public class DefaultDebugLogger implements DebugLogger {
+public class DefaultDataTracer implements DataTracer {
 
-  private final String loggerName;
+  private final String tracerName;
   private final ApplicationId applicationId;
   private final PreviewStore previewStore;
 
-  public DefaultDebugLogger(String loggerName, ApplicationId applicationId, PreviewStore previewStore) {
-    this.loggerName = loggerName;
+  public DefaultDataTracer(String tracerName, ApplicationId applicationId, PreviewStore previewStore) {
+    this.tracerName = tracerName;
     this.applicationId = applicationId;
     this.previewStore = previewStore;
   }
 
   @Override
   public void info(String propertyName, Object propertyValue) {
-    previewStore.put(applicationId, loggerName, propertyName, propertyValue);
+    previewStore.put(applicationId, tracerName, propertyName, propertyValue);
   }
 
   @Override
   public String getName() {
-    return loggerName;
+    return tracerName;
   }
 
   @Override
