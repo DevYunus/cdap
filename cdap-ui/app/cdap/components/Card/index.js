@@ -56,7 +56,7 @@ export default class Card extends Component {
         {this.props.title}
       </h3>
     );
-    const headerContent = this.props.title ? titleHeader : this.props.header;
+    const headerContent = this.props.title && this.props.showTitle ? titleHeader : this.props.header;
 
     const headerElem = (
       <div className="card-header">
@@ -131,5 +131,6 @@ Card.propTypes = {
   size: PropTypes.oneOf(['SM', 'MD', 'LG']),
   cardStyle: PropTypes.object,
   onClick: PropTypes.func,
-  id: PropTypes.string
+  id: PropTypes.string,
+  showTitle: PropTypes.bool
 };

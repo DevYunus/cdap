@@ -42,17 +42,28 @@
   top: 420px;
   transform: translate(-50%, -65%);
   animation: topTransition ease-in-out 1s;
-  width: 32%;
-  height: 300px;
+  height: 400px;
   z-index: 1031;
-  min-width: 500px;
-  max-width: 540px;
+  min-width: 600px;
+  max-width: 640px;
 
   .icon-fist {
     color: @splash-font-color;
     font-size: 9em;
     position: relative;
     top: 5px;
+  }
+
+  .splash-main-container {
+    width: 570px;
+    height: 305px;
+    padding-top: 50px;
+  }
+
+  .splash-video-container {
+    width: 570px;
+    height: 328px;
+    padding-top: 20px;
   }
 
   .version-label {
@@ -111,6 +122,7 @@
   padding-top: 15px;
   color: @card-font-color;
   box-shadow: 0 0 15px #000000;
+  height: 100%;
 
   &.card-SM { width: 33%; }
   &.card-MD { width: 66%; }

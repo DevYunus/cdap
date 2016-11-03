@@ -16,6 +16,7 @@
 
 import React, { Component, PropTypes } from 'react';
 import 'whatwg-fetch';
+import CaskVideo from 'components/CaskVideo';
 require('./SplashScreen.less');
 
 import Card from '../Card';
@@ -29,16 +30,22 @@ import T from 'i18n-react';
     this.state = {
       error: '',
       showRegistration: window.CDAP_CONFIG.cdap.standaloneWebsiteSDKDownload,
-      showSplashScreen: false
+      showSplashScreen: true,
+      registrationOpen: false,
+      videoOpen: false,
+      showTitle: true
     };
+    this.openVideo = this.openVideo.bind(this);
+    this.closeVideo = this.closeVideo.bind(this);
   }
   componentDidMount() {
     MyUserStoreApi
       .get()
       .subscribe(res => {
-        this.setState({
-          showSplashScreen: (typeof res.property['standalone-welcome-message'] === 'undefined' ? true : res.property['standalone-welcome-message'])
-        });
+        console.log('response ', res);
+        // this.setState({
+        //   showSplashScreen: (typeof res.property['standalone-welcome-message'] === 'undefined' ? true : res.property['standalone-welcome-message'])
+        // });
       });
   }
   resetWelcomeMessage() {
@@ -59,25 +66,52 @@ import T from 'i18n-react';
     });
     this.resetWelcomeMessage();
   }
+  openVideo(){
+    this.setState({
+      videoOpen : true
+    });
+  }
+  closeVideo(){
+    if(this.state.videoOpen){
+      this.setState({
+        videoOpen: false
+      });
+    }
+  }
   render() {
     return (
       <div className={!this.state.showSplashScreen ? 'hide' : ''}>
         <div className="splash-screen-backdrop"></div>
-        <div className="splash-screen">
+        <div className="splash-screen"
+          onClick={this.closeVideo}
+        >
           <Card
             className="splash-screen-card"
             closeable
             title={T.translate('features.SplashScreen.title')}
             onClose={this.onClose.bind(this)}
+            showTitle={!this.state.videoOpen}
           >
             <div className="text-center">
-              <span className="fa fa-5x icon-fist"></span>
-              <div className="version-label">
-                {T.translate('features.SplashScreen.version-label')}
+            {
+              this.state.videoOpen ?
+              <div className="splash-video-container">
+                <div className="cask-video-container">
+                  <CaskVideo />
+                </div>
               </div>
-              <h4>
-                {T.translate('features.SplashScreen.intro-message')}
-              </h4>
+              :
+              <div className="splash-main-container">
+                <span className="fa fa-5x icon-fist"></span>
+                <div className="version-label">
+                  {T.translate('features.SplashScreen.version-label')}
+                </div>
+                <h4>
+                  {T.translate('features.SplashScreen.intro-message')}
+                </h4>
+              </div>
+            }
+
               <br />
               <div className={this.state.showRegistration ? 'group' : 'group no-registration'}>
                 <a href="http://docs.cask.co/cdap">
@@ -89,9 +123,15 @@ import T from 'i18n-react';
                 </div>
                 <div
                   className={this.state.showRegistration ? 'btn btn-default' : 'hide'}
-                  onClick={this.props.openVideo}
+                  onClick={this.openVideo}
                 >
                   <span className="fa fa-youtube-play btn-icon"></span>{T.translate('features.SplashScreen.buttons.introduction')}
+                </div>
+                <div
+                  className={this.state.showRegistration ? 'btn btn-default' : 'hide'}
+                  onClick={this.openVideo}
+                >
+                  <span className="fa fa-pencil-square btn-icon"></span>{"Registration"}
                 </div>
               </div>
             </div>
