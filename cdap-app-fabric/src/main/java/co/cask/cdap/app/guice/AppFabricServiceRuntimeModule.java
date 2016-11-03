@@ -322,7 +322,6 @@ public final class AppFabricServiceRuntimeModule extends RuntimeModule {
       bind(RuntimeStore.class).to(DefaultStore.class);
       bind(ArtifactStore.class).in(Scopes.SINGLETON);
       bind(ProgramLifecycleService.class).in(Scopes.SINGLETON);
-      bind(DebugLoggerFactory.class).to(NoopDebugLoggerFactory.class);
       bind(PreviewStore.class).to(DefaultPreviewStore.class);
 
       install(new PrivateModule() {

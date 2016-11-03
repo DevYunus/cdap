@@ -58,6 +58,7 @@ import co.cask.cdap.proto.id.NamespaceId;
 import co.cask.cdap.proto.id.ProgramId;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import org.apache.tephra.TransactionFailureException;
 import org.apache.tephra.TransactionSystemClient;
 import org.apache.twill.api.RunId;
@@ -89,8 +90,9 @@ public abstract class AbstractContext extends AbstractServiceDiscoverer
   private final long logicalStartTime;
   private final SecureStore secureStore;
   private final Transactional transactional;
-  @Inject(optional = true) private final DebugLoggerFactory debugLoggerFactory = new NoopDebugLoggerFactory();
   protected final DynamicDatasetCache datasetCache;
+
+  private DebugLoggerFactory debugLoggerFactory = new NoopDebugLoggerFactory();
 
   /**
    * Constructs a context without plugin support.
@@ -143,9 +145,7 @@ public abstract class AbstractContext extends AbstractServiceDiscoverer
                                                   program.getApplicationSpecification().getPlugins());
     this.admin = new DefaultAdmin(dsFramework, new NamespaceId(program.getId().getNamespace()), secureStoreManager);
     this.secureStore = secureStore;
-
     this.transactional = Transactions.createTransactional(getDatasetCache());
-
   }
 
   private Iterable<? extends EntityId> createOwners(ProgramId programId) {
@@ -362,8 +362,13 @@ public abstract class AbstractContext extends AbstractServiceDiscoverer
     transactional.execute(timeoutInSeconds, runnable);
   }
 
+  @Override
   public DebugLogger getLogger(String loggerName) {
-    return debugLoggerFactory.getLogger(loggerName,
-                                        new ApplicationId(program.getNamespaceId(), program.getApplicationId()));
+    return debugLoggerFactory.getLogger(loggerName, program.getId().getParent());
+  }
+
+  @Inject(optional = true)
+  private void setDebugLoggerFactory(@Named("DebugLoggerFactory") DebugLoggerFactory debugLoggerFactory) {
+    this.debugLoggerFactory = debugLoggerFactory;
   }
 }
