@@ -28,6 +28,7 @@ import co.cask.cdap.common.conf.CConfiguration;
 import co.cask.cdap.common.conf.Constants;
 import co.cask.cdap.common.kerberos.SecurityUtil;
 import co.cask.cdap.common.namespace.NamespaceAdmin;
+import co.cask.cdap.common.security.AuthEnforce;
 import co.cask.cdap.common.security.ImpersonationInfo;
 import co.cask.cdap.common.security.Impersonator;
 import co.cask.cdap.data2.dataset2.DatasetFramework;
@@ -262,6 +263,7 @@ public final class DefaultNamespaceAdmin implements NamespaceAdmin {
    * @throws NamespaceNotFoundException if the specified namespace does not exist
    */
   @Override
+  @AuthEnforce(entity = "namespaceId", enforceOn = NamespaceId.class, privileges = Action.ADMIN)
   public synchronized void delete(final Id.Namespace namespaceId) throws Exception {
     final NamespaceId namespace = namespaceId.toEntityId();
     // TODO: CDAP-870, CDAP-1427: Delete should be in a single transaction.

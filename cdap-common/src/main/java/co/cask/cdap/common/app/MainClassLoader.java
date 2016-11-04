@@ -22,12 +22,18 @@ import co.cask.cdap.common.lang.ClassLoaders;
 import co.cask.cdap.common.lang.CombineClassLoader;
 import co.cask.cdap.common.lang.FilterClassLoader;
 import co.cask.cdap.common.lang.InterceptableClassLoader;
+import co.cask.cdap.common.security.AuthEnforce;
+import co.cask.cdap.common.security.AuthEnforceClassRewriter;
 import co.cask.cdap.common.utils.DirUtils;
 import co.cask.cdap.internal.asm.Classes;
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 import com.google.common.base.Throwables;
+import com.google.common.io.ByteStreams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,10 +53,16 @@ import javax.annotation.Nullable;
  */
 public final class MainClassLoader extends InterceptableClassLoader {
 
+  private static final Logger LOG = LoggerFactory.getLogger(MainClassLoader.class);
+
   private static final String DATASET_CLASS_NAME = Dataset.class.getName();
+  private static final String AUTH_ENFORCE_CLASS_NAME = AuthEnforce.class.getName();
+
   private final DatasetClassRewriter datasetRewriter;
+  private final AuthEnforceClassRewriter authEnforceClassRewriter;
   private final Function<String, URL> resourceLookup;
   private final Map<String, Boolean> cache;
+  private final Map<String, RewritesNeeded> classesToRewrite;
 
   /**
    * @return a new instance from the current context classloader or the system classloader. The returned
@@ -111,14 +123,25 @@ public final class MainClassLoader extends InterceptableClassLoader {
   public MainClassLoader(URL[] urls, ClassLoader parent) {
     super(urls, parent);
     this.datasetRewriter = new DatasetClassRewriter();
+    this.authEnforceClassRewriter = new AuthEnforceClassRewriter();
     this.resourceLookup = ClassLoaders.createClassResourceLookup(this);
     this.cache = new HashMap<>();
+    this.classesToRewrite = new HashMap<>();
   }
 
   @Override
   protected boolean needIntercept(String className) {
     try {
-      return Classes.isSubTypeOf(className, DATASET_CLASS_NAME, resourceLookup, cache);
+      RewritesNeeded rewritesNeeded = new RewritesNeeded();
+      rewritesNeeded.setDatasetRewriteNeeded(Classes.isSubTypeOf(className, DATASET_CLASS_NAME, resourceLookup, cache));
+      // Authorization annotation can only exists in cdap classes so we need to overwrite only classes
+      // in co.cask.cdap package
+      //TODO (Rohit) : This is a hack. Figure out why ClassNotFound is thrown for Hbase AlreadyExistsException
+      rewritesNeeded.setAuthRewriteNeeded(className.startsWith("co.cask.cdap") &&
+                                            !className.equalsIgnoreCase("co.cask.cdap.data2.util.hbase" +
+                                                                          ".HBaseTableUtil"));
+      classesToRewrite.put(className, rewritesNeeded);
+      return rewritesNeeded.needsRewrite();
     } catch (IOException e) {
       throw Throwables.propagate(e);
     }
@@ -126,7 +149,16 @@ public final class MainClassLoader extends InterceptableClassLoader {
 
   @Override
   public byte[] rewriteClass(String className, InputStream input) throws IOException {
-    return datasetRewriter.rewriteClass(className, input);
+    byte[] modifiedByteCode = ByteStreams.toByteArray(input);
+    if (classesToRewrite.containsKey(className)) {
+      if (classesToRewrite.get(className).isDatasetRewriteNeeded()){
+        modifiedByteCode = datasetRewriter.rewriteClass(className, new ByteArrayInputStream(modifiedByteCode));
+      }
+      if (classesToRewrite.get(className).isAuthRewriteNeeded()) {
+        modifiedByteCode = authEnforceClassRewriter.rewriteClass(className, new ByteArrayInputStream(modifiedByteCode));
+      }
+    }
+    return modifiedByteCode;
   }
 
   /**
@@ -151,5 +183,29 @@ public final class MainClassLoader extends InterceptableClassLoader {
     }
 
     return urls.toArray(new URL[urls.size()]);
+  }
+
+  private final class RewritesNeeded {
+    boolean datasetRewriteNeeded;
+    boolean authRewriteNeeded;
+
+    boolean isDatasetRewriteNeeded() {
+      return datasetRewriteNeeded;
+    }
+
+    void setDatasetRewriteNeeded(boolean datasetRewriteNeeded) {
+      this.datasetRewriteNeeded = datasetRewriteNeeded;
+    }
+
+    boolean isAuthRewriteNeeded() {
+      return authRewriteNeeded;
+    }
+
+    void setAuthRewriteNeeded(boolean authRewriteNeeded) {
+      this.authRewriteNeeded = authRewriteNeeded;
+    }
+    boolean needsRewrite() {
+      return datasetRewriteNeeded || authRewriteNeeded;
+    }
   }
 }
