@@ -48,6 +48,15 @@ public class PreviewDataset extends AbstractDataset {
     this.table = table;
   }
 
+  /**
+   * Put data into the table based on the application id and tracerName. The rowKey is formed by having the namespace
+   * id, application id and tracer name as prefix, following by the count of put operations on this prefix.
+   *
+   * @param applicationId application id of the preview run.
+   * @param tracerName the name of the {@link co.cask.cdap.api.preview.DataTracer}.
+   * @param propertyName the property of the data.
+   * @param value the value of the data.
+   */
   void put(ApplicationId applicationId, String tracerName, String propertyName, Object value) {
     MDSKey mdsKey = new MDSKey.Builder().add(applicationId.getNamespace())
       .add(applicationId.getApplication()).add(tracerName).add(COUNT_RECORD_TYPE).build();

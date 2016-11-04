@@ -160,8 +160,8 @@ final class BasicSparkClientContext implements SparkClientContext {
   }
 
   @Override
-  public DataTracer getTracer(String tracerName) {
-    return sparkRuntimeContext.getTracer(tracerName);
+  public DataTracer getDataTracer(String dataTracerName) {
+    return sparkRuntimeContext.getDataTracer(dataTracerName);
   }
 
   @Override

@@ -118,5 +118,5 @@ class SerializableSparkExecutionContext(val delegate: SparkExecutionContext) ext
     // no-op
   }
 
-  override def getTracer(loggerName: String): DataTracer = delegate.getTracer(loggerName)
+  override def getDataTracer(loggerName: String): DataTracer = delegate.getDataTracer(loggerName)
 }

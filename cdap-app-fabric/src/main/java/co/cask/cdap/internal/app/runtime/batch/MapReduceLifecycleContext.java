@@ -307,8 +307,8 @@ public class MapReduceLifecycleContext<KEY, VALUE> implements MapReduceTaskConte
   }
 
   @Override
-  public DataTracer getTracer(String tracerName) {
-    return delegate.getTracer(tracerName);
+  public DataTracer getDataTracer(String dataTracerName) {
+    return delegate.getDataTracer(dataTracerName);
   }
 
   @Override

@@ -287,7 +287,7 @@ class DefaultSparkExecutionContext(runtimeContext: SparkRuntimeContext,
     }, TransactionType.IMPLICIT)
   }
 
-  override def getTracer(loggerName: String): DataTracer = runtimeContext.getTracer(loggerName)
+  override def getDataTracer(loggerName: String): DataTracer = runtimeContext.getDataTracer(loggerName)
 
   @throws[IOException]
   def list(namespace: String): util.Map[String, String] = {

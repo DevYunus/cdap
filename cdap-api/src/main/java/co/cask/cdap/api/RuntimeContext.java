@@ -53,9 +53,9 @@ public interface RuntimeContext {
   Admin getAdmin();
 
   /**
-   * @param tracerName the name of the logger using which the debug information will be logged
+   * @param dataTracerName the name of the logger using which the debug information will be logged
    *
    * @return an {@link DataTracer} to perform log operations.
    */
-  DataTracer getTracer(String tracerName);
+  DataTracer getDataTracer(String dataTracerName);
 }

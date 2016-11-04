@@ -789,8 +789,8 @@ public class HttpHandlerGeneratorTest {
     }
 
     @Override
-    public DataTracer getTracer(String tracerName) {
-      return new NoopDataTracer(tracerName);
+    public DataTracer getDataTracer(String dataTracerName) {
+      return new NoopDataTracer(dataTracerName);
     }
 
     @Override

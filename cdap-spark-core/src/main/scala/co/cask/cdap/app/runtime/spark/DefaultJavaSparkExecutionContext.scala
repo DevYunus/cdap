@@ -191,7 +191,7 @@ class DefaultJavaSparkExecutionContext(sec: SparkExecutionContext) extends JavaS
     sec.saveAsDataset(JavaPairRDD.toRDD(rdd), namespace, datasetName, arguments.toMap)
   }
 
-  override def getTracer(loggerName: String): DataTracer = sec.getTracer(loggerName)
+  override def getDataTracer(loggerName: String): DataTracer = sec.getDataTracer(loggerName)
 
   @throws[IOException]
   override def listSecureData(namespace: String): util.Map[String, String] = {
