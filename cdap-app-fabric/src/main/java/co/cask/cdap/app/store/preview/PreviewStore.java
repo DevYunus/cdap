@@ -53,9 +53,4 @@ public interface PreviewStore {
    * @param applicationId the id of the preview for which the data to be removed
    */
   void remove(ApplicationId applicationId);
-
-  /**
-   * Clears the preview data store.
-   */
-  void clear() throws IOException, DatasetManagementException;
 }

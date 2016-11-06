@@ -43,6 +43,7 @@ import org.apache.tephra.TransactionSystemClient;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 
 /**
  * Default implementation of the {@link PreviewStore} that stores data in in-memory table
@@ -109,8 +110,7 @@ public class DefaultPreviewStore implements PreviewStore {
   }
 
   @VisibleForTesting
-  @Override
-  public void clear() throws IOException, DatasetManagementException {
+  void clear() throws IOException, DatasetManagementException {
     truncate(dsFramework.getAdmin(PREVIEW_TABLE_ID, null));
   }
 
@@ -121,7 +121,7 @@ public class DefaultPreviewStore implements PreviewStore {
     return new PreviewDataset(table);
   }
 
-  private void truncate(DatasetAdmin admin) throws IOException {
+  private void truncate(@Nullable DatasetAdmin admin) throws IOException {
     if (admin != null) {
       admin.truncate();
     }

@@ -57,7 +57,6 @@ import co.cask.cdap.proto.id.NamespaceId;
 import co.cask.cdap.proto.id.ProgramId;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import org.apache.tephra.TransactionFailureException;
 import org.apache.tephra.TransactionSystemClient;
 import org.apache.twill.api.RunId;
@@ -367,7 +366,7 @@ public abstract class AbstractContext extends AbstractServiceDiscoverer
   }
 
   @Inject(optional = true)
-  private void setDataTracerFactory(@Named("DataTracerFactory") DataTracerFactory dataTracerFactory) {
+  private void setDataTracerFactory(DataTracerFactory dataTracerFactory) {
     this.dataTracerFactory = dataTracerFactory;
   }
 }
