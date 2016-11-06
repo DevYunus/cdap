@@ -44,11 +44,27 @@ var plugins = [
   ])
 ];
 var mode = process.env.NODE_ENV;
+
 if (mode === 'production' || mode === 'build') {
   plugins.push(
     new webpack.DefinePlugin({
       'process.env':{
         'NODE_ENV': JSON.stringify("production"),
+        '__DEVTOOLS__': false
+      },
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+          warnings: false
+      }
+    })
+  );
+  //Add Bamboo to environmental variable
+} else if(mode === 'bamboo') {
+  plugins.push(
+    new webpack.DefinePlugin({
+      'process.env':{
+        'NODE_ENV': JSON.stringify("bamboo"),
         '__DEVTOOLS__': false
       },
     }),

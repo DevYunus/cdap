@@ -1,4 +1,4 @@
 {
-  "standalone.website.sdk.download": "true",
+  "standalone.website.sdk.download": "false",
   "ui.debug.enabled": "false"
 }

@@ -42,10 +42,42 @@
   top: 420px;
   transform: translate(-50%, -65%);
   animation: topTransition ease-in-out 1s;
-  height: 400px;
+  min-height: 400px;
   z-index: 1031;
   min-width: 600px;
   max-width: 640px;
+
+  .second-line-form {
+    padding-top: 5px;
+  }
+  .splash-checkbox {
+    margin-right: 5px;
+    padding-top: 10px;
+  }
+  .registration-form {
+    padding: 10px;
+    text-align: left;
+    margin: auto;
+    input {
+      outline: 0;
+      margin-left: 10px;
+      margin-right: 10px;
+      height: 22px;
+      border: none;
+      padding-left: 5px;
+    }
+    .first-name,
+    .last-name,
+    .email {
+      color: #000000;
+      margin-left: 10px;
+      margin-right: 10px;
+    }
+
+    .last-name {
+      margin-left: 0;
+    }
+  }
 
   .icon-fist {
     color: @splash-font-color;
@@ -56,13 +88,15 @@
 
   .splash-main-container {
     width: 570px;
-    height: 294px;
-    padding-top: 50px;
+    height: 225px;
+    padding-top: 38px;
+    margin: auto;
   }
 
   .splash-video-container {
+    margin: auto;
     width: 570px;
-    height: 328px;
+    height: 259px;
     padding-top: 20px;
   }
 
@@ -91,8 +125,11 @@
   }
   .group {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     margin-top: -10px;
+    width: 415px;
+    margin-left: auto;
+    margin-right: auto;
 
     &.no-registration {
       justify-content: center;

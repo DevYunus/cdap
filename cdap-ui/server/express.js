@@ -91,7 +91,8 @@ function makeApp (authAddress, cdapConfig, uiSettings) {
         routerServerUrl: cdapConfig['router.server.address'],
         routerServerPort: cdapConfig['router.server.port'],
         routerSSLServerPort: cdapConfig['router.ssl.bind.port'],
-        standaloneWebsiteSDKDownload: uiSettings['standalone.website.sdk.download'] === 'true' || false,
+        standaloneWebsiteSDKDownload: (uiSettings['standalone.website.sdk.download'] === 'true' || false)
+                                      || (process.env.NODE_ENV === 'bamboo'),
         uiDebugEnabled: uiSettings['ui.debug.enabled'] === 'true' || false
       },
       hydrator: {
