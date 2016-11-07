@@ -140,15 +140,6 @@ public class AppFabricServer extends AbstractIdleService {
     this.sslEnabled = cConf.getBoolean(Constants.Security.SSL.INTERNAL_ENABLED);
   }
 
-  private static String generateRandomPassword() {
-    /*
-    This works by choosing 130 bits from a cryptographically secure random bit generator, and encoding them in base-32.
-    128 bits is considered to be cryptographically strong, but each digit in a base 32 number can encode 5 bits,
-    so 128 is rounded up to the next multiple of 5.
-     */
-    return new BigInteger(130, new SecureRandom()).toString(32);
-  }
-
   /**
    * Configures the AppFabricService pre-start.
    */
@@ -284,4 +275,13 @@ public class AppFabricServer extends AbstractIdleService {
     privilegesFetcherProxyService.stopAndWait();
   }
 
+  private static String generateRandomPassword() {
+    /*
+    This works by choosing 130 bits from a cryptographically secure random bit generator, and encoding them in base-32.
+    128 bits is considered to be cryptographically strong, but each digit in a base 32 number can encode 5 bits,
+    so 128 is rounded up to the next multiple of 5.
+    Base 21 system uses alphabets A-Z and numbers 2-7
+     */
+    return new BigInteger(130, new SecureRandom()).toString(32);
+  }
 }
