@@ -109,16 +109,16 @@ public class NamespacedExploreMetadataHttpHandler extends AbstractExploreMetadat
       @Override
       public QueryHandle execute(HttpRequest request, HttpResponder responder)
         throws IllegalArgumentException, SQLException, ExploreException, IOException {
-        TablesArgs args = decodeArguments(request, TablesArgs.class, new TablesArgs(null, namespaceId, "%", null));
+        final TablesArgs args =
+          decodeArguments(request, TablesArgs.class, new TablesArgs(null, namespaceId, "%", null));
         LOG.trace("Received get tables with params: {}", args.toString());
-        doAs(new NamespaceId(namespaceId), new Callable<QueryHandle>() {
+        return doAs(new NamespaceId(namespaceId), new Callable<QueryHandle>() {
           @Override
           public QueryHandle call() throws Exception {
-            return null;
+            return exploreService.getTables(args.getCatalog(), args.getSchemaPattern(),
+                                            args.getTableNamePattern(), args.getTableTypes());
           }
         });
-        return exploreService.getTables(args.getCatalog(), args.getSchemaPattern(),
-                                        args.getTableNamePattern(), args.getTableTypes());
       }
     });
   }
@@ -131,16 +131,16 @@ public class NamespacedExploreMetadataHttpHandler extends AbstractExploreMetadat
       @Override
       public QueryHandle execute(HttpRequest request, HttpResponder responder)
         throws IllegalArgumentException, SQLException, ExploreException, IOException {
-        ColumnsArgs args = decodeArguments(request, ColumnsArgs.class, new ColumnsArgs(null, namespaceId, "%", "%"));
+        final ColumnsArgs args =
+          decodeArguments(request, ColumnsArgs.class, new ColumnsArgs(null, namespaceId, "%", "%"));
         LOG.trace("Received get columns with params: {}", args.toString());
-        doAs(new NamespaceId(namespaceId), new Callable<QueryHandle>() {
+        return doAs(new NamespaceId(namespaceId), new Callable<QueryHandle>() {
           @Override
           public QueryHandle call() throws Exception {
-            return null;
+            return exploreService.getColumns(args.getCatalog(), args.getSchemaPattern(),
+                                             args.getTableNamePattern(), args.getColumnNamePattern());
           }
         });
-        return exploreService.getColumns(args.getCatalog(), args.getSchemaPattern(),
-                                         args.getTableNamePattern(), args.getColumnNamePattern());
       }
     });
   }
@@ -153,15 +153,14 @@ public class NamespacedExploreMetadataHttpHandler extends AbstractExploreMetadat
       @Override
       public QueryHandle execute(HttpRequest request, HttpResponder responder)
         throws IllegalArgumentException, SQLException, ExploreException, IOException {
-        SchemasArgs args = decodeArguments(request, SchemasArgs.class, new SchemasArgs(null, namespaceId));
+        final SchemasArgs args = decodeArguments(request, SchemasArgs.class, new SchemasArgs(null, namespaceId));
         LOG.trace("Received get schemas with params: {}", args.toString());
-        doAs(new NamespaceId(namespaceId), new Callable<QueryHandle>() {
+        return doAs(new NamespaceId(namespaceId), new Callable<QueryHandle>() {
           @Override
           public QueryHandle call() throws Exception {
-            return null;
+            return exploreService.getSchemas(args.getCatalog(), args.getSchemaPattern());
           }
         });
-        return exploreService.getSchemas(args.getCatalog(), args.getSchemaPattern());
       }
     });
   }
@@ -175,16 +174,16 @@ public class NamespacedExploreMetadataHttpHandler extends AbstractExploreMetadat
       @Override
       public QueryHandle execute(HttpRequest request, HttpResponder responder)
         throws IllegalArgumentException, SQLException, ExploreException, IOException {
-        FunctionsArgs args = decodeArguments(request, FunctionsArgs.class, new FunctionsArgs(null, namespaceId, "%"));
+        final FunctionsArgs args =
+          decodeArguments(request, FunctionsArgs.class, new FunctionsArgs(null, namespaceId, "%"));
         LOG.trace("Received get functions with params: {}", args.toString());
-        doAs(new NamespaceId(namespaceId), new Callable<QueryHandle>() {
+        return doAs(new NamespaceId(namespaceId), new Callable<QueryHandle>() {
           @Override
           public QueryHandle call() throws Exception {
-            return null;
+            return exploreService.getFunctions(args.getCatalog(), args.getSchemaPattern(),
+                                               args.getFunctionNamePattern());
           }
         });
-        return exploreService.getFunctions(args.getCatalog(), args.getSchemaPattern(),
-                                           args.getFunctionNamePattern());
       }
     });
   }
