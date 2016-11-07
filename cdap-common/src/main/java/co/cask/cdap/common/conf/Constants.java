@@ -25,7 +25,7 @@ public final class Constants {
 
   public static final String[] FEATURE_TOGGLE_PROPS = {
     Security.SSL_ENABLED,
-    Security.Ssl.SSL_INTERNAL_ENABLED,
+    Security.SSL.INTERNAL_ENABLED,
     Security.ENABLED,
     Explore.EXPLORE_ENABLED,
   };
@@ -731,15 +731,16 @@ public final class Constants {
     /**
      * App Fabric
      */
-    public static final class Ssl {
+    public static final class SSL {
       /** Enables SSL for external services. */
-      public static final String SSL_EXTERNAL_ENABLED = "ssl.external.enabled";
+      @SuppressWarnings("unused")
+      public static final String EXTERNAL_ENABLED = "ssl.external.enabled";
       /** Enables SSL for internal services. */
-      public static final String SSL_INTERNAL_ENABLED = "ssl.internal.enabled";
+      public static final String INTERNAL_ENABLED = "ssl.internal.enabled";
       /** Password for the java keystore. */
-      public static final String SSL_KEYSTORE_PASSWORD = "ssl.internal.keystore.password";
+      public static final String KEYSTORE_PASSWORD = "ssl.internal.keystore.password";
       /** Type for the java keystore. e.g. JCEKS. */
-      public static final String SSL_KEYSTORE_TYPE = "ssl.internal.keystore.type";
+      public static final String KEYSTORE_TYPE = "ssl.internal.keystore.type";
       /** Algorithm used to generate key pair used in SSL certificate generation. */
       public static final String KEY_PAIR_ALGORITHM = "ssl.internal.key.pair.algorithm";
       /** Algorithm used for generating the random number used for SSL certificate. */

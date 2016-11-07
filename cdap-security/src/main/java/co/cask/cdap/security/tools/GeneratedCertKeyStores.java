@@ -80,32 +80,31 @@ public final class GeneratedCertKeyStores {
    * Create a Java key store with a stored self-signed certificate.
    * @return Java keystore which has a self signed X.509 certificate
    */
-  public static KeyStore getSSLKeyStore(SConfiguration sConf) {
+  public static KeyStore getSSLKeyStore(SConfiguration sConf, String password) {
     KeyStore keyStore;
-    String password = sConf.get(Constants.Security.Ssl.SSL_KEYSTORE_PASSWORD);
     try {
-      String keyPairAlgorithm = sConf.get(Constants.Security.Ssl.KEY_PAIR_ALGORITHM,
+      String keyPairAlgorithm = sConf.get(Constants.Security.SSL.KEY_PAIR_ALGORITHM,
                                           KEY_PAIR_ALGORITHM);
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance(keyPairAlgorithm);
-      String randomAlgorithm = sConf.get(Constants.Security.Ssl.SECURE_RANDOM_ALGORITHM,
+      String randomAlgorithm = sConf.get(Constants.Security.SSL.SECURE_RANDOM_ALGORITHM,
                                          SECURE_RANDOM_ALGORITHM);
-      String randomProvider = sConf.get(Constants.Security.Ssl.SECURE_RANDOM_PROVIDER,
+      String randomProvider = sConf.get(Constants.Security.SSL.SECURE_RANDOM_PROVIDER,
                                         SECURE_RANDOM_PROVIDER);
       SecureRandom random = SecureRandom.getInstance(randomAlgorithm, randomProvider);
       keyGen.initialize(KEY_SIZE, random);
       // generate a key pair
       KeyPair pair = keyGen.generateKeyPair();
-      int validity = sConf.getInt(Constants.Security.Ssl.CERT_VALIDITY, VALIDITY);
-      String distinguishedName = sConf.get(Constants.Security.Ssl.CERT_DISTINGUISHED_NAME, DISTINGUISHED_NAME);
-      String signatureAlgo = sConf.get(Constants.Security.Ssl.SIGNATURE_ALGORITHM, SIGNATURE_ALGORITHM);
+      int validity = sConf.getInt(Constants.Security.SSL.CERT_VALIDITY, VALIDITY);
+      String distinguishedName = sConf.get(Constants.Security.SSL.CERT_DISTINGUISHED_NAME, DISTINGUISHED_NAME);
+      String signatureAlgo = sConf.get(Constants.Security.SSL.SIGNATURE_ALGORITHM, SIGNATURE_ALGORITHM);
 
       X509Certificate cert = getCertificate(distinguishedName, pair, validity, signatureAlgo);
 
-      keyStore = KeyStore.getInstance(sConf.get(Constants.Security.Ssl.SSL_KEYSTORE_TYPE, SSL_KEYSTORE_TYPE));
+      keyStore = KeyStore.getInstance(sConf.get(Constants.Security.SSL.KEYSTORE_TYPE, SSL_KEYSTORE_TYPE));
       keyStore.load(null, password.toCharArray());
       keyStore.setKeyEntry(CERT_ALIAS, pair.getPrivate(), password.toCharArray(),
                            new java.security.cert.Certificate[]{cert});
-    } catch (Throwable e) {
+    } catch (Exception e) {
       throw new RuntimeException("SSL is enabled but a key store file could not be created. A keystore is required " +
                                    "for SSL to be used.", e);
     }

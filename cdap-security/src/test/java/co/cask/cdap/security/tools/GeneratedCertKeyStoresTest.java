@@ -30,12 +30,13 @@ public class GeneratedCertKeyStoresTest {
   private static final String SIGNATURE_ALGORITHM = "MD5withRSA";
   private static final String SSL_KEYSTORE_TYPE = "JKS";
   private static final String CERTIFICATE_TYPE = "X.509";
+  private static final String SSL_PASSWORD = "pass";
 
   @Test
   public void testGetSSLKeyStore() throws Exception {
     SConfiguration sConf = SConfiguration.create();
-    sConf.set(Constants.Security.Ssl.SSL_KEYSTORE_PASSWORD, "pass");
-    KeyStore ks = GeneratedCertKeyStores.getSSLKeyStore(sConf);
+    sConf.set(Constants.Security.SSL.KEYSTORE_PASSWORD, SSL_PASSWORD);
+    KeyStore ks = GeneratedCertKeyStores.getSSLKeyStore(sConf, SSL_PASSWORD);
     Assert.assertEquals(SSL_KEYSTORE_TYPE, ks.getType());
     Assert.assertEquals(CERT_ALIAS, ks.aliases().nextElement());
     Assert.assertEquals(1, ks.size());

@@ -67,10 +67,10 @@ public class AppFabricServerTest {
   @Test
   public void testSSL() throws IOException {
     CConfiguration cConf = CConfiguration.create();
-    cConf.setBoolean(Constants.Security.Ssl.SSL_INTERNAL_ENABLED, true);
+    cConf.setBoolean(Constants.Security.SSL.INTERNAL_ENABLED, true);
     cConf.setInt(Constants.AppFabric.SERVER_SSL_PORT, 20443);
     SConfiguration sConf = SConfiguration.create();
-    sConf.set(Constants.Security.Ssl.SSL_KEYSTORE_PASSWORD, "secret");
+    sConf.set(Constants.Security.SSL.KEYSTORE_PASSWORD, "secret");
     final Injector injector = AppFabricTestHelper.getInjector(cConf, sConf, new AbstractModule() {
       @Override
       protected void configure() {

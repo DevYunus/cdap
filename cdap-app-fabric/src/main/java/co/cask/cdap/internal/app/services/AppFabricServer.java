@@ -41,7 +41,6 @@ import co.cask.http.HandlerHook;
 import co.cask.http.HttpHandler;
 import co.cask.http.NettyHttpService;
 import com.google.common.base.Function;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AbstractIdleService;
@@ -58,9 +57,11 @@ import org.jboss.netty.handler.ssl.SslHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.KeyStore;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -87,14 +88,14 @@ public class AppFabricServer extends AbstractIdleService {
   private final PluginService pluginService;
   private final PrivilegesFetcherProxyService privilegesFetcherProxyService;
   private final RouteStore routeStore;
-  private final int serverPort;
+  private final CConfiguration cConf;
+  private final SConfiguration sConf;
   private final boolean sslEnabled;
-  private final SSLHandlerFactory sslHandlerFactory;
 
+  private SSLHandlerFactory sslHandlerFactory;
   private NettyHttpService httpService;
   private Set<HttpHandler> handlers;
   private MetricsCollectionService metricsCollectionService;
-  private CConfiguration cConf;
 
   /**
    * Construct the AppFabricServer with service factory and cConf coming from guice injection.
@@ -122,6 +123,7 @@ public class AppFabricServer extends AbstractIdleService {
     this.schedulerService = schedulerService;
     this.handlers = handlers;
     this.cConf = cConf;
+    this.sConf = sConf;
     this.metricsCollectionService = metricsCollectionService;
     this.programRuntimeService = programRuntimeService;
     this.notificationService = notificationService;
@@ -135,21 +137,16 @@ public class AppFabricServer extends AbstractIdleService {
     this.pluginService = pluginService;
     this.privilegesFetcherProxyService = privilegesFetcherProxyService;
     this.routeStore = routeStore;
-    this.sslEnabled = cConf.getBoolean(Constants.Security.Ssl.SSL_INTERNAL_ENABLED);
-    if (sslEnabled) {
-      this.serverPort = cConf.getInt(Constants.AppFabric.SERVER_SSL_PORT);
-      KeyStore ks = GeneratedCertKeyStores.getSSLKeyStore(sConf);
-      String password = sConf.get(Constants.Security.Ssl.SSL_KEYSTORE_PASSWORD);
-      if (Strings.isNullOrEmpty(password)) {
-        throw new RuntimeException("SSL is enabled but a password for the keystore file is not set. Please set " +
-                                     "a password in cdap-security.xml using " +
-                                     Constants.Security.Ssl.SSL_KEYSTORE_PASSWORD);
-      }
-      this.sslHandlerFactory = new SSLHandlerFactory(ks, password);
-    } else {
-      this.serverPort = cConf.getInt(Constants.AppFabric.SERVER_PORT);
-      this.sslHandlerFactory = null;
-    }
+    this.sslEnabled = cConf.getBoolean(Constants.Security.SSL.INTERNAL_ENABLED);
+  }
+
+  private static String generateRandomPassword() {
+    /*
+    This works by choosing 130 bits from a cryptographically secure random bit generator, and encoding them in base-32.
+    128 bits is considered to be cryptographically strong, but each digit in a base 32 number can encode 5 bits,
+    so 128 is rounded up to the next multiple of 5.
+     */
+    return new BigInteger(130, new SecureRandom()).toString(32);
   }
 
   /**
@@ -173,6 +170,18 @@ public class AppFabricServer extends AbstractIdleService {
         privilegesFetcherProxyService.start()
       )
     ).get();
+
+    int serverPort;
+    if (sslEnabled) {
+      serverPort = cConf.getInt(Constants.AppFabric.SERVER_SSL_PORT);
+      String password = sConf.get(Constants.Security.SSL.KEYSTORE_PASSWORD, generateRandomPassword());
+      KeyStore ks = GeneratedCertKeyStores.getSSLKeyStore(sConf, password);
+
+      this.sslHandlerFactory = new SSLHandlerFactory(ks, password);
+    } else {
+      serverPort = cConf.getInt(Constants.AppFabric.SERVER_PORT);
+      this.sslHandlerFactory = null;
+    }
 
     // Create handler hooks
     ImmutableList.Builder<HandlerHook> builder = ImmutableList.builder();
