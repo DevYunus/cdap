@@ -101,8 +101,8 @@ public class AuthEnforceClassRewriter implements ClassRewriter {
         @Override
         public void visitCode() {
           if (hasAuthEnforce) {
-            System.out.println("AuthEnforce annotation found in class: " + className + " for \nEntities: " + entities +
-                                 "enforceOn: " + enforceOn + " actions: " + actions);
+            System.out.println("### AuthEnforce annotation found in class: " + className + " for \nEntities: " +
+                                 entities + "enforceOn: " + enforceOn + " actions: " + actions);
           }
           super.visitCode();
         }

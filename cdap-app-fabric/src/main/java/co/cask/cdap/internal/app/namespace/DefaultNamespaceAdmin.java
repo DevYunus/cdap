@@ -263,7 +263,6 @@ public final class DefaultNamespaceAdmin implements NamespaceAdmin {
    * @throws NamespaceNotFoundException if the specified namespace does not exist
    */
   @Override
-  @AuthEnforce(entity = "namespaceId", enforceOn = NamespaceId.class, privileges = Action.ADMIN)
   public synchronized void delete(final Id.Namespace namespaceId) throws Exception {
     final NamespaceId namespace = namespaceId.toEntityId();
     // TODO: CDAP-870, CDAP-1427: Delete should be in a single transaction.
@@ -306,6 +305,7 @@ public final class DefaultNamespaceAdmin implements NamespaceAdmin {
   }
 
   @Override
+  @AuthEnforce(entity = "namespaceId", enforceOn = NamespaceId.class, privileges = Action.ADMIN)
   public synchronized void deleteDatasets(Id.Namespace namespaceId) throws Exception {
     // TODO: CDAP-870, CDAP-1427: Delete should be in a single transaction.
     if (!exists(namespaceId)) {
