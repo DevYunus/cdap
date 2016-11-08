@@ -28,5 +28,5 @@ public interface DataTracerFactory {
    * @param tracerName the name of the tracer with which the data to be associated
    * @return the instance of the DataTracer
    */
-  DataTracer getTracer(String tracerName, ApplicationId applicationId);
+  DataTracer getDataTracer(String tracerName, ApplicationId applicationId);
 }
