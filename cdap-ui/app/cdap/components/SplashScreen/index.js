@@ -118,24 +118,24 @@ import T from 'i18n-react';
             showTitle={!this.state.videoOpen}
           >
             <div className="text-center">
+            <div className="splash-main-container">
             {
               this.state.videoOpen ?
-              <div className="splash-video-container">
                 <div className="cask-video-container">
                   <CaskVideo />
                 </div>
-              </div>
               :
-              <div className="splash-main-container">
-                <span className="fa fa-5x icon-fist"></span>
-                <div className="version-label">
-                  {T.translate('features.SplashScreen.version-label')}
+                <div>
+                  <span className="fa fa-5x icon-fist"></span>
+                  <div className="version-label">
+                    {T.translate('features.SplashScreen.version-label')}
+                  </div>
+                  <h4>
+                    {T.translate('features.SplashScreen.intro-message')}
+                  </h4>
                 </div>
-                <h4>
-                  {T.translate('features.SplashScreen.intro-message')}
-                </h4>
-              </div>
             }
+            </div>
 
               <br />
               <div className={this.state.showRegistration ? 'group' : 'group no-registration'}>
