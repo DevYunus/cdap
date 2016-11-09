@@ -119,9 +119,7 @@ public class AppFabricServer extends AbstractIdleService {
     this.systemArtifactLoader = systemArtifactLoader;
     this.pluginService = pluginService;
     this.privilegesFetcherProxyService = privilegesFetcherProxyService;
-    if (configuration.getBoolean(Constants.Namespace.CREATE_DEFAULT_NAMESPACE)) {
-      this.defaultNamespaceEnsurer = new DefaultNamespaceEnsurer(namespaceAdmin);
-    }
+    this.defaultNamespaceEnsurer = new DefaultNamespaceEnsurer(namespaceAdmin);
   }
 
   /**
@@ -223,16 +221,12 @@ public class AppFabricServer extends AbstractIdleService {
     }, Threads.SAME_THREAD_EXECUTOR);
 
     httpService.startAndWait();
-    if (defaultNamespaceEnsurer != null) {
-      defaultNamespaceEnsurer.startAndWait();
-    }
+    defaultNamespaceEnsurer.startAndWait();
   }
 
   @Override
   protected void shutDown() throws Exception {
-    if (defaultNamespaceEnsurer != null) {
-      defaultNamespaceEnsurer.stopAndWait();
-    }
+    defaultNamespaceEnsurer.stopAndWait();
     httpService.stopAndWait();
     programRuntimeService.stopAndWait();
     schedulerService.stopAndWait();

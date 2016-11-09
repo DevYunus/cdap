@@ -965,7 +965,6 @@ public final class Constants {
    */
   public static final class Namespace {
     public static final String NAMESPACES_DIR = "namespaces.dir";
-    public static final String CREATE_DEFAULT_NAMESPACE = "default.namespace.creation";
   }
 
   /**

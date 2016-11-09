@@ -2074,11 +2074,4 @@
       Read timeout in milliseconds for internal HTTP requests
     </description>
   </property>
-
-  <property>
-    <name>default.namespace.creation</name>
-    <value>true</value>
-    <description>Determines whether the default namespace will be created upon CDAP master startup.</description>
-  </property>
-
 </configuration>
