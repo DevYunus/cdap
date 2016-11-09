@@ -484,19 +484,17 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
         LOG.warn("Failed to locate cdap-common.jar. It will not be added to the spark extra classpath in the" +
                    " beginning.");
       }
-<<<<<<< HEAD
-=======
 
+      List<String> extraJarPaths = new ArrayList<>();
       // Add extra jars set in cConf to jarFiles
       for (String jar : LocalizationUtils.getExtraJarNames(cConf)) {
-        jarFiles.add(Paths.get("$PWD", jar).toString());
+        extraJarPaths.add(Paths.get("$PWD", jar).toString());
       }
 
-      Collections.sort(jarFiles);
->>>>>>> 9f893d8... localize extra jars set in cdap-site.xml for programs
       Joiner joiner = Joiner.on(File.pathSeparator).skipNulls();
+      String extraJarsPath = joiner.join(extraJarPaths);
       String extraClassPath = joiner.join(Paths.get("$PWD", CDAP_LAUNCHER_JAR), cdapCommonJarPath,
-                                          Paths.get("$PWD", CDAP_SPARK_JAR, "lib", "*"));
+                                          extraJarsPath, Paths.get("$PWD", CDAP_SPARK_JAR, "lib", "*"));
       if (logbackJarName != null) {
         extraClassPath = logbackJarName + File.pathSeparator + extraClassPath;
       }
