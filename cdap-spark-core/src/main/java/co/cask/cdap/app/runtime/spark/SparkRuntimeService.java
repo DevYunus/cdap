@@ -181,7 +181,7 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
         }
       };
 
-      List<String> extraJars = null;
+      List<String> extraJars = new ArrayList<>();
       if (contextConfig.isLocal()) {
         File metricsConf = SparkMetricsSink.writeConfig(File.createTempFile("metrics", ".properties", tempDir));
         metricsConfPath = metricsConf.getAbsolutePath();
@@ -228,9 +228,11 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
         // Localize the hConf file to executor nodes
         localizeResources.add(new LocalizeResource(saveHConf(hConf, tempDir)));
 
-        extraJars = CConfigurationUtil.getExtraJarNames(cConf);
-        for (String jar : extraJars) {
-          localizeResources.add(new LocalizeResource(new File(jar)));
+        List<File> extraJarFiles = CConfigurationUtil.getExtraJars(cConf);
+        for (File jar : extraJarFiles) {
+          String jarName = jar.getName();
+          extraJars.add(jarName);
+          localizeResources.add(new LocalizeResource(new File(jarName)));
         }
       }
 
@@ -492,7 +494,7 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
       }
 
       Joiner joiner = Joiner.on(File.pathSeparator).skipNulls();
-      String extraJarsPath = extraJarPaths == null ? null : joiner.join(extraJarPaths);
+      String extraJarsPath = extraJarPaths.size() == 0 ? null : joiner.join(extraJarPaths);
       String extraClassPath = joiner.join(Paths.get("$PWD", CDAP_LAUNCHER_JAR), cdapCommonJarPath,
                                           extraJarsPath, Paths.get("$PWD", CDAP_SPARK_JAR, "lib", "*"));
       if (logbackJarName != null) {

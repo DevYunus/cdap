@@ -55,20 +55,6 @@ public class CConfigurationUtil extends Configuration {
   }
 
   /**
-   * Get the file names of extra jars set in {@link CConfiguration} as a list.
-   *
-   * @param cConf {@link CConfiguration} containing the extra jars
-   * @return a list of extra jars file names.
-   */
-  public static  List<String> getExtraJarNames(CConfiguration cConf) {
-    List<String> jars = new ArrayList<>();
-    for (File jar : getExtraJars(cConf)) {
-      jars.add(jar.getName());
-    }
-    return jars;
-  }
-
-  /**
    * Asserts that the given CConfiguration has valid properties.
    * @param cConf the CConfiguration object to check
    * @throws IllegalArgumentException if the given cConf is invalid.
