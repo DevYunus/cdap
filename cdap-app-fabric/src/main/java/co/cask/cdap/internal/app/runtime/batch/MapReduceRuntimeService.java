@@ -296,10 +296,6 @@ final class MapReduceRuntimeService extends AbstractExecutionThreadService {
         // Add extra jars set in cConf
         for (File extraJar : CConfigurationUtil.getExtraJars(cConf)) {
           Location extraJarLocation = copyFileToLocation(extraJar, tempLocation);
-          if (extraJarLocation == null) {
-            LOG.warn("extraJarLocation should not be null");
-            continue;
-          }
           job.addCacheFile(extraJarLocation.toURI());
           classpath.add(extraJarLocation.getName());
         }
@@ -1036,6 +1032,9 @@ final class MapReduceRuntimeService extends AbstractExecutionThreadService {
   @Nullable
   private Location createPluginArchive(Location targetDir) throws IOException {
     File pluginArchive = context.getPluginArchive();
+    if (pluginArchive == null) {
+      return null;
+    }
     return copyFileToLocation(pluginArchive, targetDir);
   }
 
@@ -1045,11 +1044,7 @@ final class MapReduceRuntimeService extends AbstractExecutionThreadService {
    * @param targetDir directory where the file should be copied to.
    * @return {@link Location} to the file or {@code null} if given file is {@code null}.
    */
-  @Nullable
-  private Location copyFileToLocation(@Nullable File file, Location targetDir) throws IOException {
-    if (file == null) {
-      return null;
-    }
+  private Location copyFileToLocation(File file, Location targetDir) throws IOException {
     Location targetLocation = targetDir.append(file.getName()).getTempFile(".jar");
     Files.copy(file, Locations.newOutputSupplier(targetLocation));
     return targetLocation;
