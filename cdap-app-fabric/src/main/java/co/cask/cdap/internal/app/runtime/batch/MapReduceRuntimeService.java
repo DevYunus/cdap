@@ -292,6 +292,12 @@ final class MapReduceRuntimeService extends AbstractExecutionThreadService {
         Collections.sort(jarFiles);
         classpath.addAll(jarFiles);
         classpath.add("job.jar/classes");
+        // Add extra jars set in cConf
+        for (File extraJar : LocalizationUtils.getExtraJars(cConf)) {
+          Location extraJarLocation = copyFileToLocation(extraJar, tempLocation);
+          job.addCacheFile(extraJarLocation.toURI());
+          classpath.add(extraJarLocation.getName());
+        }
         String applicationClasspath
           = Joiner.on(",").join(MapReduceContainerHelper.getMapReduceClassPath(mapredConf, classpath));
 
@@ -299,7 +305,6 @@ final class MapReduceRuntimeService extends AbstractExecutionThreadService {
         Location launcherJar = createLauncherJar(applicationClasspath, tempLocation);
         job.addCacheFile(launcherJar.toURI());
 
-<<<<<<< HEAD
         // The only thing in the container classpath is the launcher.jar
         // The MapReduceContainerLauncher inside the launcher.jar will creates a MapReduceClassLoader and launch
         // the actual MapReduce AM/Task from that
@@ -308,17 +313,6 @@ final class MapReduceRuntimeService extends AbstractExecutionThreadService {
         if (frameworkURI != null) {
           job.addCacheArchive(frameworkURI);
         }
-=======
-        // Add extra jars set in cConf
-        for (File extraJar : LocalizationUtils.getExtraJars(cConf)) {
-          Location extraJarLocation = copyFileToLocation(extraJar, tempLocation);
-          job.addCacheFile(extraJarLocation.toURI());
-          classpath.add(extraJarLocation.getName());
-        }
-
-        // Add the mapreduce application classpath at last
-        MapReduceContainerHelper.addMapReduceClassPath(mapredConf, classpath);
->>>>>>> 9f893d8... localize extra jars set in cdap-site.xml for programs
 
         mapredConf.unset(MRJobConfig.MAPREDUCE_APPLICATION_FRAMEWORK_PATH);
         mapredConf.set(MRJobConfig.MAPREDUCE_APPLICATION_CLASSPATH, launcherJar.getName());
