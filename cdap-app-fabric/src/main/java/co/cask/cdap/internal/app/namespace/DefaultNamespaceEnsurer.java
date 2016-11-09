@@ -69,8 +69,7 @@ public final class DefaultNamespaceEnsurer extends AbstractService {
           }
         };
       }
-    }, RetryStrategies.timeLimit(10, TimeUnit.MINUTES,
-      RetryStrategies.exponentialDelay(200, 5000, TimeUnit.MILLISECONDS)));
+    }, RetryStrategies.exponentialDelay(200, 5000, TimeUnit.MILLISECONDS));
     serviceDelegate.addListener(new ServiceListenerAdapter() {
       @Override
       public void failed(State from, Throwable failure) {
