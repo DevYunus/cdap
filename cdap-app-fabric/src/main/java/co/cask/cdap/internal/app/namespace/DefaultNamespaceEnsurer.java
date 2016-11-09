@@ -57,7 +57,7 @@ public final class DefaultNamespaceEnsurer extends AbstractService {
               if (createDefaultNamespace) {
                 namespaceAdmin.create(NamespaceMeta.DEFAULT);
                 // if there is no exception, assume successfully created and break
-                LOG.info("Created default namespace successfully.");
+                LOG.info("Successfully created namespace '{}'.", NamespaceMeta.DEFAULT);
               }
               notifyStarted();
             } catch (AlreadyExistsException e) {
@@ -76,12 +76,6 @@ public final class DefaultNamespaceEnsurer extends AbstractService {
         };
       }
     }, RetryStrategies.exponentialDelay(200, 5000, TimeUnit.MILLISECONDS));
-    serviceDelegate.addListener(new ServiceListenerAdapter() {
-      @Override
-      public void failed(State from, Throwable failure) {
-        LOG.error("Received failure from state '{}'.", from, failure);
-      }
-    }, Threads.SAME_THREAD_EXECUTOR);
   }
 
   @Override

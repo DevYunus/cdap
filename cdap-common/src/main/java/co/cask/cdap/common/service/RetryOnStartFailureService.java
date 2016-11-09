@@ -17,6 +17,7 @@
 package co.cask.cdap.common.service;
 
 import com.google.common.base.Supplier;
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.AbstractService;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -60,16 +61,14 @@ public class RetryOnStartFailureService extends AbstractService {
         while (delay >= 0 && !isInterrupted()) {
           try {
             currentDelegate = delegateService;
-            delegateService.startAndWait();
+            delegateService.start().get();
+            break;
+          } catch (InterruptedException e) {
+            // a service's start can be interrupted, so we don't want to suppress that
+            interrupt();
             break;
           } catch (Throwable t) {
             LOG.debug("Exception raised when starting service {}", delegateServiceName, t);
-
-            if (t.getCause() != null && t.getCause() instanceof InterruptedException) {
-              // a service's start can be interrupted, so we don't want to suppress that
-              interrupt();
-              break;
-            }
 
             delay = retryStrategy.nextRetry(++failures, startTime);
             if (delay < 0) {
