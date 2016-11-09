@@ -228,8 +228,7 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
         // Localize the hConf file to executor nodes
         localizeResources.add(new LocalizeResource(saveHConf(hConf, tempDir)));
 
-        List<File> extraJarFiles = CConfigurationUtil.getExtraJars(cConf);
-        for (File jar : extraJarFiles) {
+        for (File jar : CConfigurationUtil.getExtraJars(cConf)) {
           String jarName = jar.getName();
           extraJars.add(jarName);
           localizeResources.add(new LocalizeResource(new File(jarName)));
@@ -453,8 +452,7 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
    */
   private Map<String, String> createSubmitConfigs(File localDir,
                                                   String metricsConfPath, @Nullable String logbackJarName,
-                                                  @Nullable List<String> extraJarPaths,
-                                                  boolean localMode) {
+                                                  List<String> extraJarPaths, boolean localMode) {
     Map<String, String> configs = new HashMap<>();
 
     // Make Spark UI runs on random port. By default, Spark UI runs on port 4040 and it will do a sequential search
