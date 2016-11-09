@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 Cask Data, Inc.
+ * Copyright © 2015-2016 Cask Data, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -59,11 +59,17 @@ public class RetryOnStartFailureService extends AbstractService {
 
         while (delay >= 0 && !isInterrupted()) {
           try {
-            delegateService.startAndWait();
             currentDelegate = delegateService;
+            delegateService.startAndWait();
             break;
           } catch (Throwable t) {
             LOG.debug("Exception raised when starting service {}", delegateServiceName, t);
+
+            if (t.getCause() != null && t.getCause() instanceof InterruptedException) {
+              // a service's start can be interrupted, so we don't want to suppress that
+              interrupt();
+              break;
+            }
 
             delay = retryStrategy.nextRetry(++failures, startTime);
             if (delay < 0) {
@@ -84,7 +90,7 @@ public class RetryOnStartFailureService extends AbstractService {
         }
 
         if (isInterrupted()) {
-          LOG.warn("Stop requested for service {} during start failure retry.", delegateServiceName);
+          LOG.warn("Stop requested for service {} during start.", delegateServiceName);
         }
       }
     };

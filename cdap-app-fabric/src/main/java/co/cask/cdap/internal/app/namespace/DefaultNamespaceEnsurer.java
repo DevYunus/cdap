@@ -1,5 +1,5 @@
 /*
- * Copyright © 2015 Cask Data, Inc.
+ * Copyright © 2015-2016 Cask Data, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -25,6 +25,8 @@ import com.google.common.base.Supplier;
 import com.google.common.util.concurrent.AbstractService;
 import com.google.common.util.concurrent.Service;
 import com.google.inject.Inject;
+import org.apache.twill.common.Threads;
+import org.apache.twill.internal.ServiceListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +69,14 @@ public final class DefaultNamespaceEnsurer extends AbstractService {
           }
         };
       }
-    }, RetryStrategies.exponentialDelay(200, 5000, TimeUnit.MILLISECONDS));
+    }, RetryStrategies.timeLimit(10, TimeUnit.MINUTES,
+      RetryStrategies.exponentialDelay(200, 5000, TimeUnit.MILLISECONDS)));
+    serviceDelegate.addListener(new ServiceListenerAdapter() {
+      @Override
+      public void failed(State from, Throwable failure) {
+        LOG.error("Received failure from state '{}'.", from, failure);
+      }
+    }, Threads.SAME_THREAD_EXECUTOR);
   }
 
   @Override
