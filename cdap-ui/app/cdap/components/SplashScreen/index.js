@@ -33,7 +33,6 @@ import T from 'i18n-react';
       showSplashScreen: true,
       registrationOpen: false,
       videoOpen: false,
-      showTitle: true,
       first: '',
       last: '',
       email: ''
@@ -106,6 +105,8 @@ import T from 'i18n-react';
     this.setState({email : e.target.value});
   }
   render() {
+
+    let cardTitle = this.state.videoOpen ? '' : T.translate('features.SplashScreen.title');
     return (
       <div className={!this.state.showSplashScreen ? 'hide' : ''}>
         <div className="splash-screen-backdrop"></div>
@@ -113,9 +114,8 @@ import T from 'i18n-react';
           <Card
             className="splash-screen-card"
             closeable
-            title={T.translate('features.SplashScreen.title')}
+            title={cardTitle}
             onClose={this.onClose.bind(this)}
-            showTitle={!this.state.videoOpen}
           >
             <div className="text-center">
             <div className="splash-main-container">
@@ -159,22 +159,22 @@ import T from 'i18n-react';
               </div>
               {
                 this.state.showRegistration && this.state.registrationOpen ?
-                <div>
-                  <div className="registration-form">
-                    <div>
-                        I
-                        <input onChange={this.firstOnChange} autoFocus className="first-name" type="text" name="first" id="first" placeholder="First Name" />
-                        <input onChange={this.lastOnChange} className="last-name" type="text" name="last" id="last" placeholder="Last Name" />
-                        would like to receive product updates and
-                        <div className="second-line-form">
-                          newsletters from Cask at this email address
-                          <input onChange={this.emailOnChange} className="email" type="email" name="email" id="email" placeholder="email@example.com" />
-                        </div>
+                  <div>
+                    <div className="registration-form">
+                      <div>
+                          I
+                          <input onChange={this.firstOnChange} autoFocus className="first-name" type="text" name="first" id="first" placeholder="First Name" />
+                          <input onChange={this.lastOnChange} className="last-name" type="text" name="last" id="last" placeholder="Last Name" />
+                          would like to receive product updates and
+                          <div className="second-line-form">
+                            newsletters from Cask at this email address
+                            <input onChange={this.emailOnChange} className="email" type="email" name="email" id="email" placeholder="email@example.com" />
+                          </div>
+                      </div>
                     </div>
                   </div>
-                </div>
                 :
-                null
+                  null
               }
               <div className="splash-checkbox">
                 <input checked={this.doNotShowCheck} onChange={this.toggleCheckbox} type="checkbox" />
