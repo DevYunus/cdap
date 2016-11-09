@@ -1035,10 +1035,10 @@ final class MapReduceRuntimeService extends AbstractExecutionThreadService {
   }
 
   /**
-   * Copies a plugin archive jar to the target location.
+   * Copies a file to the target location.
    *
-   * @param targetDir directory where the archive jar should be created
-   * @return {@link Location} to the plugin archive or {@code null} if no plugin archive is available from the context.
+   * @param targetDir directory where the file should be copied to.
+   * @return {@link Location} to the file or {@code null} if given file is {@code null}.
    */
   private Location copyFileToLocation(File file, Location targetDir) throws IOException {
     if (file == null) {
