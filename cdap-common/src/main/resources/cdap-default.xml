@@ -2075,4 +2075,10 @@
     </description>
   </property>
 
+  <property>
+    <name>create.default.namespace</name>
+    <value>true</value>
+    <description>Determines whether the default namespace will be created upon CDAP master startup.</description>
+  </property>
+
 </configuration>
