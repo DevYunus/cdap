@@ -39,6 +39,7 @@ import co.cask.cdap.proto.id.NamespaceId;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.inject.Inject;
 import org.apache.tephra.RetryStrategies;
 import org.apache.tephra.TransactionFailureException;
@@ -62,7 +63,7 @@ public class DefaultPreviewStore implements PreviewStore {
   private static final byte[] TRACER = Bytes.toBytes("l");
   private static final byte[] PROPERTY = Bytes.toBytes("p");
   private static final byte[] VALUE = Bytes.toBytes("v");
-  private static final byte[][] columns = new byte[][] {TRACER, PROPERTY, VALUE };
+  private static final byte[][] COLUMNS = new byte[][] {TRACER, PROPERTY, VALUE };
 
   private final DatasetFramework dsFramework;
   private final Transactional transactional;
@@ -96,11 +97,11 @@ public class DefaultPreviewStore implements PreviewStore {
   }
 
   @Override
-  public Map<String, List<String>> get(final ApplicationId applicationId, final String tracerName) {
+  public Map<String, List<JsonElement>> get(final ApplicationId applicationId, final String tracerName) {
     try {
-      return Transactions.execute(transactional, new TxCallable<Map<String, List<String>>>() {
+      return Transactions.execute(transactional, new TxCallable<Map<String, List<JsonElement>>>() {
         @Override
-        public Map<String, List<String>> call(DatasetContext context) throws Exception {
+        public Map<String, List<JsonElement>> call(DatasetContext context) throws Exception {
           return get(getPreviewTable(context), applicationId, tracerName);
         }
       });
@@ -159,22 +160,22 @@ public class DefaultPreviewStore implements PreviewStore {
       Bytes.toBytes(propertyName),
       Bytes.toBytes(GSON.toJson(value))
     };
-    table.put(mdsKey.getKey(), columns, values);
+    table.put(mdsKey.getKey(), COLUMNS, values);
   }
 
-  private Map<String, List<String>> get(Table table, ApplicationId applicationId, String tracerName) {
+  private Map<String, List<JsonElement>> get(Table table, ApplicationId applicationId, String tracerName) {
     byte[] startRowKey = new MDSKey.Builder().add(applicationId.getNamespace())
       .add(applicationId.getApplication()).add(tracerName).build().getKey();
     byte[] stopRowKey = new MDSKey(Bytes.stopKeyForPrefix(startRowKey)).getKey();
 
-    Map<String, List<String>> result = new HashMap<>();
+    Map<String, List<JsonElement>> result = new HashMap<>();
     try (Scanner scanner = table.scan(startRowKey, stopRowKey)) {
       Row indexRow;
       while ((indexRow = scanner.next()) != null) {
         Map<byte[], byte[]> columns = indexRow.getColumns();
         String propertyName = Bytes.toString(columns.get(PROPERTY));
-        String value = Bytes.toString(columns.get(VALUE));
-        List<String> values = result.get(propertyName);
+        JsonElement value = GSON.fromJson(Bytes.toString(columns.get(VALUE)), JsonElement.class);
+        List<JsonElement> values = result.get(propertyName);
         if (values == null) {
           values = new ArrayList<>();
           result.put(propertyName, values);

@@ -18,6 +18,7 @@ package co.cask.cdap.app.store.preview;
 import co.cask.cdap.api.dataset.DatasetManagementException;
 import co.cask.cdap.api.preview.DataTracer;
 import co.cask.cdap.proto.id.ApplicationId;
+import com.google.gson.JsonElement;
 
 import java.io.IOException;
 import java.util.List;
@@ -45,7 +46,7 @@ public interface PreviewStore {
    * @param tracerName the name of the tracer used to put the preview data
    * @return the {@link Map} of property and associated values for the program
    */
-  Map<String, List<String>> get(ApplicationId applicationId, String tracerName);
+  Map<String, List<JsonElement>> get(ApplicationId applicationId, String tracerName);
 
   /**
    * Removes the preview data stored by specified application id

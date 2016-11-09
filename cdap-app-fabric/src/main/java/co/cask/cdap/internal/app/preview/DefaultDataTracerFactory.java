@@ -34,7 +34,7 @@ public class DefaultDataTracerFactory implements DataTracerFactory {
   }
 
   @Override
-  public DataTracer getDataTracer(String tracerName, ApplicationId applicationId) {
-    return new DefaultDataTracer(tracerName, applicationId, previewStore);
+  public DataTracer getDataTracer(ApplicationId applicationId, String tracerName) {
+    return new DefaultDataTracer(applicationId, tracerName, previewStore);
   }
 }

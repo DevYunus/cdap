@@ -20,6 +20,8 @@ import co.cask.cdap.internal.AppFabricTestHelper;
 import co.cask.cdap.proto.NamespaceMeta;
 import co.cask.cdap.proto.id.ApplicationId;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 import com.google.inject.Injector;
 
 import org.junit.Assert;
@@ -66,7 +68,7 @@ public class DefaultPreviewStoreTest {
     store.put(firstApplicationId, "mytracer", "key2", 3);
     Map<Object, Object> propertyMap = new HashMap<>();
     propertyMap.put("key1", "value1");
-    propertyMap.put(1, "value2");
+    propertyMap.put("1", "value2");
     store.put(firstApplicationId, "mytracer", "key2", propertyMap);
     store.put(firstApplicationId, "myanothertracer", "key2", 3);
 
@@ -74,16 +76,19 @@ public class DefaultPreviewStoreTest {
     store.put(secondApplicationId, "mytracer", "key1", "value1");
 
     // get the data for first application and logger name "mytracer"
-    Map<String, List<String>> firstApplicationData = store.get(firstApplicationId, "mytracer");
+    Map<String, List<JsonElement>> firstApplicationData = store.get(firstApplicationId, "mytracer");
     // key1 and key2 are two keys inserted for the first application.
     Assert.assertEquals(2, firstApplicationData.size());
-    Assert.assertEquals(Arrays.asList("\"value1\"", "2"), firstApplicationData.get("key1"));
-    Assert.assertEquals(Arrays.asList("3", GSON.toJson(propertyMap)), firstApplicationData.get("key2"));
+    Assert.assertEquals("value1", firstApplicationData.get("key1").get(0).getAsString());
+    Assert.assertEquals(2, firstApplicationData.get("key1").get(1).getAsInt());
+    Assert.assertEquals(3, firstApplicationData.get("key2").get(0).getAsInt());
+    Assert.assertEquals(propertyMap, GSON.fromJson(firstApplicationData.get("key2").get(1),
+                                                   new TypeToken<HashMap<Object, Object>>(){ }.getType()));
 
     // get the data for second application and logger name "mytracer"
-    Map<String, List<String>> secondApplicationData = store.get(secondApplicationId, "mytracer");
+    Map<String, List<JsonElement>> secondApplicationData = store.get(secondApplicationId, "mytracer");
     Assert.assertEquals(1, secondApplicationData.size());
-    Assert.assertEquals(Collections.singletonList("\"value1\""), secondApplicationData.get("key1"));
+    Assert.assertEquals("value1", secondApplicationData.get("key1").get(0).getAsString());
 
     // remove the data from first application
     store.remove(firstApplicationId);

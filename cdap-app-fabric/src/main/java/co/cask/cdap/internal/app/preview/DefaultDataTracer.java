@@ -20,15 +20,15 @@ import co.cask.cdap.app.store.preview.PreviewStore;
 import co.cask.cdap.proto.id.ApplicationId;
 
 /**
- * Default implementation of {@link DataTracer}
+ * Default implementation of {@link DataTracer}, the data are preserved using {@link PreviewStore}
  */
-public class DefaultDataTracer implements DataTracer {
+class DefaultDataTracer implements DataTracer {
 
   private final String tracerName;
   private final ApplicationId applicationId;
   private final PreviewStore previewStore;
 
-  public DefaultDataTracer(String tracerName, ApplicationId applicationId, PreviewStore previewStore) {
+  DefaultDataTracer(ApplicationId applicationId, String tracerName, PreviewStore previewStore) {
     this.tracerName = tracerName;
     this.applicationId = applicationId;
     this.previewStore = previewStore;

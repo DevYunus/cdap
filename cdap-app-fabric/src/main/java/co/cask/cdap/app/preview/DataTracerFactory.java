@@ -25,8 +25,9 @@ public interface DataTracerFactory {
 
   /**
    * Get the {@link DataTracer} used to put the debug data.
+   * @param applicationId the name of the tracer with which the data to be associated
    * @param tracerName the name of the tracer with which the data to be associated
    * @return the instance of the DataTracer
    */
-  DataTracer getDataTracer(String tracerName, ApplicationId applicationId);
+  DataTracer getDataTracer(ApplicationId applicationId, String tracerName);
 }

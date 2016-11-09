@@ -42,7 +42,7 @@ import co.cask.cdap.api.service.http.HttpServiceRequest;
 import co.cask.cdap.api.service.http.HttpServiceResponder;
 import co.cask.cdap.common.io.Locations;
 import co.cask.cdap.common.metrics.NoOpMetricsCollectionService;
-import co.cask.cdap.internal.app.preview.NoopDataTracer;
+import co.cask.cdap.internal.app.preview.NoopDataTracerFactory;
 import co.cask.http.HttpHandler;
 import co.cask.http.NettyHttpService;
 import com.google.common.base.Charsets;
@@ -790,7 +790,7 @@ public class HttpHandlerGeneratorTest {
 
     @Override
     public DataTracer getDataTracer(String dataTracerName) {
-      return new NoopDataTracer(dataTracerName);
+      return new NoopDataTracerFactory().getDataTracer(null, dataTracerName);
     }
 
     @Override

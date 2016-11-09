@@ -362,7 +362,7 @@ public abstract class AbstractContext extends AbstractServiceDiscoverer
 
   @Override
   public DataTracer getDataTracer(String dataTracerName) {
-    return dataTracerFactory.getDataTracer(dataTracerName, program.getId().getParent());
+    return dataTracerFactory.getDataTracer(program.getId().getParent(), dataTracerName);
   }
 
   @Inject(optional = true)

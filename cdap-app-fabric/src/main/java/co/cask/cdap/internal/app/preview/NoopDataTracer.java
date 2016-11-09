@@ -20,11 +20,11 @@ import co.cask.cdap.api.preview.DataTracer;
 /**
  * Implementation of the {@link DataTracer} which logs nothing.
  */
-public class NoopDataTracer implements DataTracer {
+class NoopDataTracer implements DataTracer {
 
   private final String tracerName;
 
-  public NoopDataTracer(String tracerName) {
+  NoopDataTracer(String tracerName) {
     this.tracerName = tracerName;
   }
 

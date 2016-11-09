@@ -25,7 +25,7 @@ import co.cask.cdap.proto.id.ApplicationId;
 public class NoopDataTracerFactory implements DataTracerFactory {
 
   @Override
-  public DataTracer getDataTracer(String tracerName, ApplicationId applicationId) {
+  public DataTracer getDataTracer(ApplicationId applicationId, String tracerName) {
     return new NoopDataTracer(tracerName);
   }
 }
