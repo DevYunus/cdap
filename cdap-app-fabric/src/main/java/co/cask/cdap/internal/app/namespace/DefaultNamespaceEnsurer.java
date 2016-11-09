@@ -17,8 +17,6 @@
 package co.cask.cdap.internal.app.namespace;
 
 import co.cask.cdap.common.AlreadyExistsException;
-import co.cask.cdap.common.conf.CConfiguration;
-import co.cask.cdap.common.conf.Constants;
 import co.cask.cdap.common.namespace.NamespaceAdmin;
 import co.cask.cdap.common.service.RetryOnStartFailureService;
 import co.cask.cdap.common.service.RetryStrategies;
@@ -27,8 +25,6 @@ import com.google.common.base.Supplier;
 import com.google.common.util.concurrent.AbstractService;
 import com.google.common.util.concurrent.Service;
 import com.google.inject.Inject;
-import org.apache.twill.common.Threads;
-import org.apache.twill.internal.ServiceListenerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +40,7 @@ public final class DefaultNamespaceEnsurer extends AbstractService {
   private final Service serviceDelegate;
 
   @Inject
-  public DefaultNamespaceEnsurer(CConfiguration cConfiguration, final NamespaceAdmin namespaceAdmin) {
-    final boolean createDefaultNamespace = cConfiguration.getBoolean(Constants.Namespace.CREATE_DEFAULT_NAMESPACE);
-
+  public DefaultNamespaceEnsurer(final NamespaceAdmin namespaceAdmin) {
     this.serviceDelegate = new RetryOnStartFailureService(new Supplier<Service>() {
       @Override
       public Service get() {
@@ -54,11 +48,9 @@ public final class DefaultNamespaceEnsurer extends AbstractService {
           @Override
           protected void doStart() {
             try {
-              if (createDefaultNamespace) {
-                namespaceAdmin.create(NamespaceMeta.DEFAULT);
-                // if there is no exception, assume successfully created and break
-                LOG.info("Successfully created namespace '{}'.", NamespaceMeta.DEFAULT);
-              }
+              namespaceAdmin.create(NamespaceMeta.DEFAULT);
+              // if there is no exception, assume successfully created and break
+              LOG.info("Successfully created namespace '{}'.", NamespaceMeta.DEFAULT);
               notifyStarted();
             } catch (AlreadyExistsException e) {
               // default namespace already exists
