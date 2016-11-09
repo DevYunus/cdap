@@ -18,6 +18,9 @@ package co.cask.cdap.common.conf;
 
 import com.google.common.base.Preconditions;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -34,6 +37,35 @@ public class CConfigurationUtil extends Configuration {
         destination.set(property, cConf.get(property));
       }
     }
+  }
+
+  /**
+   * Get extra jars set in {@link CConfiguration} as a list of {@link File}.
+   *
+   * @param cConf {@link CConfiguration} containing the extra jars
+   * @return a list of {@link File} created from the extra jars set in cConf.
+   */
+  public static List<File> getExtraJars(CConfiguration cConf) {
+    String[] extraJars = cConf.getStrings(Constants.AppFabric.PROGRAM_CONTAINER_DIST_JARS);
+    List<File> jarFiles = new ArrayList<>();
+    for (String jarPath : extraJars) {
+      jarFiles.add(new File(jarPath));
+    }
+    return jarFiles;
+  }
+
+  /**
+   * Get the file names of extra jars set in {@link CConfiguration} as a list.
+   *
+   * @param cConf {@link CConfiguration} containing the extra jars
+   * @return a list of extra jars file names.
+   */
+  public static  List<String> getExtraJarNames(CConfiguration cConf) {
+    List<String> jars = new ArrayList<>();
+    for (File jar : getExtraJars(cConf)) {
+      jars.add(jar.getName());
+    }
+    return jars;
   }
 
   /**

@@ -191,7 +191,7 @@ public final class Constants {
     /**
      * Configuration setting to provide extra jars for programs.
      */
-    public static final String EXTRA_JARS = "extra.jars";
+    public static final String PROGRAM_CONTAINER_DIST_JARS = "program.container.dist.jars";
   }
 
   /**

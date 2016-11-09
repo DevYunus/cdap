@@ -22,6 +22,7 @@ import co.cask.cdap.app.runtime.ProgramController;
 import co.cask.cdap.app.runtime.ProgramOptions;
 import co.cask.cdap.app.runtime.ProgramRunner;
 import co.cask.cdap.common.conf.CConfiguration;
+import co.cask.cdap.common.conf.CConfigurationUtil;
 import co.cask.cdap.common.conf.Constants;
 import co.cask.cdap.common.lang.ClassLoaders;
 import co.cask.cdap.common.lang.CombineClassLoader;
@@ -77,6 +78,7 @@ import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -184,9 +186,13 @@ public abstract class AbstractDistributedProgramRunner implements ProgramRunner 
       final ProgramOptions options = addArtifactPluginFiles(oldOptions, localizeResources,
                                                             DirUtils.createTempDir(tempDir));
 
+      final List<String> additionalClassPaths = new ArrayList<>();
       // Add extra jars set in cConf to additionalClassPaths and localizeResources
-      LocalizationUtils.addExtraJars(localizeResources, cConf);
-      final List<String> additionalClassPaths = LocalizationUtils.getExtraJarNames(cConf);
+      for (File jar : CConfigurationUtil.getExtraJars(cConf)) {
+        String jarName = jar.getName();
+        localizeResources.put(jarName, new LocalizeResource(jar));
+        additionalClassPaths.add(jarName);
+      }
 
       // Copy config files to local temp, and ask Twill to localize it to container.
       // What Twill does is to save those files in HDFS and keep using them during the lifetime of application.

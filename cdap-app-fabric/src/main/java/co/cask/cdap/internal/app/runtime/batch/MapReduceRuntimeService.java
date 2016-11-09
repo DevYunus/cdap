@@ -29,6 +29,7 @@ import co.cask.cdap.api.mapreduce.MapReduceContext;
 import co.cask.cdap.api.mapreduce.MapReduceSpecification;
 import co.cask.cdap.api.stream.StreamEventDecoder;
 import co.cask.cdap.common.conf.CConfiguration;
+import co.cask.cdap.common.conf.CConfigurationUtil;
 import co.cask.cdap.common.conf.ConfigurationUtil;
 import co.cask.cdap.common.conf.Constants;
 import co.cask.cdap.common.io.Locations;
@@ -293,7 +294,7 @@ final class MapReduceRuntimeService extends AbstractExecutionThreadService {
         classpath.addAll(jarFiles);
         classpath.add("job.jar/classes");
         // Add extra jars set in cConf
-        for (File extraJar : LocalizationUtils.getExtraJars(cConf)) {
+        for (File extraJar : CConfigurationUtil.getExtraJars(cConf)) {
           Location extraJarLocation = copyFileToLocation(extraJar, tempLocation);
           job.addCacheFile(extraJarLocation.toURI());
           classpath.add(extraJarLocation.getName());
@@ -1040,7 +1041,7 @@ final class MapReduceRuntimeService extends AbstractExecutionThreadService {
    * @param targetDir directory where the file should be copied to.
    * @return {@link Location} to the file or {@code null} if given file is {@code null}.
    */
-  private Location copyFileToLocation(File file, Location targetDir) throws IOException {
+  private Location copyFileToLocation(@Nullable File file, Location targetDir) throws IOException {
     if (file == null) {
       return null;
     }

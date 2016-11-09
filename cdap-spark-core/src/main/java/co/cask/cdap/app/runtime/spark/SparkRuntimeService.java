@@ -25,6 +25,7 @@ import co.cask.cdap.api.spark.SparkExecutionContext;
 import co.cask.cdap.app.runtime.spark.distributed.SparkContainerLauncher;
 import co.cask.cdap.app.runtime.spark.submit.SparkSubmitter;
 import co.cask.cdap.common.conf.CConfiguration;
+import co.cask.cdap.common.conf.CConfigurationUtil;
 import co.cask.cdap.common.conf.Constants;
 import co.cask.cdap.common.io.Locations;
 import co.cask.cdap.common.lang.PropertyFieldSetter;
@@ -180,6 +181,7 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
         }
       };
 
+      List<String> extraJars = null;
       if (contextConfig.isLocal()) {
         File metricsConf = SparkMetricsSink.writeConfig(File.createTempFile("metrics", ".properties", tempDir));
         metricsConfPath = metricsConf.getAbsolutePath();
@@ -226,10 +228,13 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
         // Localize the hConf file to executor nodes
         localizeResources.add(new LocalizeResource(saveHConf(hConf, tempDir)));
 
-        LocalizationUtils.addLocalizedExtraJars(localizeResources, cConf);
+        extraJars = CConfigurationUtil.getExtraJarNames(cConf);
+        for (String jar : extraJars) {
+          localizeResources.add(new LocalizeResource(new File(jar)));
+        }
       }
 
-      final Map<String, String> configs = createSubmitConfigs(tempDir, metricsConfPath, logbackJarName,
+      final Map<String, String> configs = createSubmitConfigs(tempDir, metricsConfPath, logbackJarName, extraJars,
                                                               contextConfig.isLocal());
       submitSpark = new Callable<ListenableFuture<RunId>>() {
         @Override
@@ -446,6 +451,7 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
    */
   private Map<String, String> createSubmitConfigs(File localDir,
                                                   String metricsConfPath, @Nullable String logbackJarName,
+                                                  @Nullable List<String> extraJarPaths,
                                                   boolean localMode) {
     Map<String, String> configs = new HashMap<>();
 
@@ -485,14 +491,8 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
                    " beginning.");
       }
 
-      List<String> extraJarPaths = new ArrayList<>();
-      // Add extra jars set in cConf to jarFiles
-      for (String jar : LocalizationUtils.getExtraJarNames(cConf)) {
-        extraJarPaths.add(Paths.get("$PWD", jar).toString());
-      }
-
       Joiner joiner = Joiner.on(File.pathSeparator).skipNulls();
-      String extraJarsPath = joiner.join(extraJarPaths);
+      String extraJarsPath = extraJarPaths == null ? null : joiner.join(extraJarPaths);
       String extraClassPath = joiner.join(Paths.get("$PWD", CDAP_LAUNCHER_JAR), cdapCommonJarPath,
                                           extraJarsPath, Paths.get("$PWD", CDAP_SPARK_JAR, "lib", "*"));
       if (logbackJarName != null) {
