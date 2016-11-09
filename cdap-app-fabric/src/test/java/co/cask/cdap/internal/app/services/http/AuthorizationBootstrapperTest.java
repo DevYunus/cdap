@@ -117,6 +117,8 @@ public class AuthorizationBootstrapperTest {
     cConf.set(Constants.AppFabric.SYSTEM_ARTIFACTS_DIR, systemArtifactsDir.getAbsolutePath());
     createSystemArtifact(systemArtifactsDir);
     Injector injector = Guice.createInjector(new AppFabricTestModule(cConf));
+    namespaceQueryAdmin = injector.getInstance(NamespaceQueryAdmin.class);
+    namespaceAdmin = injector.getInstance(NamespaceAdmin.class);
     defaultNamespaceEnsurer = new DefaultNamespaceEnsurer(namespaceAdmin);
     discoveryServiceClient = injector.getInstance(DiscoveryServiceClient.class);
     txManager = injector.getInstance(TransactionManager.class);
@@ -125,8 +127,6 @@ public class AuthorizationBootstrapperTest {
     authorizationEnforcementService.startAndWait();
     systemArtifactLoader = injector.getInstance(SystemArtifactLoader.class);
     authorizationBootstrapper = injector.getInstance(AuthorizationBootstrapper.class);
-    namespaceQueryAdmin = injector.getInstance(NamespaceQueryAdmin.class);
-    namespaceAdmin = injector.getInstance(NamespaceAdmin.class);
     artifactRepository = injector.getInstance(ArtifactRepository.class);
     dsFramework = injector.getInstance(DatasetFramework.class);
   }
