@@ -83,7 +83,7 @@ public class DefaultPreviewStoreTest {
     Assert.assertEquals(2, firstApplicationData.get("key1").get(1).getAsInt());
     Assert.assertEquals(3, firstApplicationData.get("key2").get(0).getAsInt());
     Assert.assertEquals(propertyMap, GSON.fromJson(firstApplicationData.get("key2").get(1),
-                                                   new TypeToken<HashMap<Object, Object>>(){ }.getType()));
+                                                   new TypeToken<HashMap<Object, Object>>() { }.getType()));
 
     // get the data for second application and logger name "mytracer"
     Map<String, List<JsonElement>> secondApplicationData = store.get(secondApplicationId, "mytracer");

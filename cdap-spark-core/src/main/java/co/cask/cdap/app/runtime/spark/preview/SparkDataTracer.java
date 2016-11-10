@@ -1,3 +1,18 @@
+/*
+ * Copyright © 2016 Cask Data, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package co.cask.cdap.app.runtime.spark.preview;
 
 import co.cask.cdap.api.preview.DataTracer;
@@ -10,35 +25,32 @@ import java.io.ObjectOutput;
 
 /**
  * A {@link Externalizable} implementation of {@link DataTracer} used in Spark program execution.
-  * It has no-op for serialize/deserialize operation, with all operations delegated to the {@link SparkRuntimeContext}
-  * of the current execution context.
+  * It has no-op for serialize/deserialize operation, with all operations delegated to the {@link DataTracer}.
   */
 public class SparkDataTracer implements DataTracer, Externalizable {
 
-  private final SparkRuntimeContext sparkRuntimeContext;
-  private final String tracerName;
+  private final DataTracer dataTracer;
 
   /**
-   * Constructor. It delegates service discovery to the current {@link SparkRuntimeContext}.
+   * Constructor. It delegates {@link DataTracer} operations to the current {@link SparkRuntimeContext}.
    */
-  public SparkDataTracer(SparkRuntimeContext sparkRuntimeContext, String tracerName) {
-    this.sparkRuntimeContext = sparkRuntimeContext;
-    this.tracerName = tracerName;
+  public SparkDataTracer(DataTracer dataTracer) {
+    this.dataTracer = dataTracer;
   }
 
   @Override
   public void info(String propertyName, Object propertyValue) {
-    sparkRuntimeContext.getDataTracer(tracerName).info(propertyName, propertyValue);
+    dataTracer.info(propertyName, propertyValue);
   }
 
   @Override
   public String getName() {
-    return tracerName;
+    return dataTracer.getName();
   }
 
   @Override
   public boolean isEnabled() {
-    return sparkRuntimeContext.getDataTracer(tracerName).isEnabled();
+    return dataTracer.isEnabled();
   }
 
   @Override

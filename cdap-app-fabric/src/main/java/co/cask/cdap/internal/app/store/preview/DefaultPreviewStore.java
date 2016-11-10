@@ -60,7 +60,7 @@ public class DefaultPreviewStore implements PreviewStore {
 
   private static final DatasetId PREVIEW_TABLE_ID = NamespaceId.SYSTEM.dataset("preview.table");
   private static final Gson GSON = new Gson();
-  private static final byte[] TRACER = Bytes.toBytes("l");
+  private static final byte[] TRACER = Bytes.toBytes("t");
   private static final byte[] PROPERTY = Bytes.toBytes("p");
   private static final byte[] VALUE = Bytes.toBytes("v");
   private static final byte[][] COLUMNS = new byte[][] {TRACER, PROPERTY, VALUE };
