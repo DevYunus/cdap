@@ -199,7 +199,8 @@ public abstract class AbstractDistributedProgramRunner implements ProgramRunner 
       localizeResources.put(HADOOP_CONF_FILE_NAME,
                             new LocalizeResource(saveHConf(hConf, File.createTempFile("hConf", ".xml", tempDir))));
       localizeResources.put(CDAP_CONF_FILE_NAME,
-                            new LocalizeResource(saveCConf(cConf, File.createTempFile("cConf", ".xml", tempDir))));
+                            new LocalizeResource(saveCConf(cConf, File.createTempFile("cConf", ".xml", tempDir),
+                                                           additionalClassPaths)));
 
       // Localize the program jar
       Location programJarLocation = program.getJarLocation();
@@ -425,7 +426,7 @@ public abstract class AbstractDistributedProgramRunner implements ProgramRunner 
     return file;
   }
 
-  private File saveCConf(CConfiguration conf, File file) throws IOException {
+  private File saveCConf(CConfiguration conf, File file, List<String> extraJars) throws IOException {
     // Unsetting the runtime extension directory as the necessary extension jars should be shipped to the container
     // by the distributed ProgramRunner.
     CConfiguration copied = CConfiguration.copy(conf);
@@ -434,6 +435,8 @@ public abstract class AbstractDistributedProgramRunner implements ProgramRunner 
     // Set the CFG_LOCAL_DATA_DIR to a relative path as the data directory for the container should be relative to the
     // container directory
     copied.set(Constants.CFG_LOCAL_DATA_DIR, "data");
+
+    copied.setStrings(Constants.AppFabric.PROGRAM_CONTAINER_DIST_JARS, (String[]) extraJars.toArray());
     try (Writer writer = Files.newWriter(file, Charsets.UTF_8)) {
       copied.writeXml(writer);
     }

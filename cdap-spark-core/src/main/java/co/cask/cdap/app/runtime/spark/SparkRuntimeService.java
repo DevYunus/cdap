@@ -229,9 +229,8 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
         localizeResources.add(new LocalizeResource(saveHConf(hConf, tempDir)));
 
         for (File jar : CConfigurationUtil.getExtraJars(cConf)) {
-          String jarName = jar.getName();
-          extraJars.add(jarName);
-          localizeResources.add(new LocalizeResource(new File(jarName)));
+          extraJars.add(jar.getName());
+          localizeResources.add(new LocalizeResource(jar));
         }
       }
 
@@ -494,7 +493,7 @@ final class SparkRuntimeService extends AbstractExecutionThreadService {
       Joiner joiner = Joiner.on(File.pathSeparator).skipNulls();
       String extraJarsPath = extraJarPaths.size() == 0 ? null : joiner.join(extraJarPaths);
       String extraClassPath = joiner.join(Paths.get("$PWD", CDAP_LAUNCHER_JAR), cdapCommonJarPath,
-                                          extraJarsPath, Paths.get("$PWD", CDAP_SPARK_JAR, "lib", "*"));
+                                          Paths.get("$PWD", CDAP_SPARK_JAR, "lib", "*"), extraJarsPath);
       if (logbackJarName != null) {
         extraClassPath = logbackJarName + File.pathSeparator + extraClassPath;
       }
