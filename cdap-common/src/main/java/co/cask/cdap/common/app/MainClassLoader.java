@@ -151,7 +151,7 @@ public final class MainClassLoader extends InterceptableClassLoader {
   public byte[] rewriteClass(String className, InputStream input) throws IOException {
     byte[] modifiedByteCode = ByteStreams.toByteArray(input);
     if (classesToRewrite.containsKey(className)) {
-      if (classesToRewrite.get(className).isDatasetRewriteNeeded()){
+      if (classesToRewrite.get(className).isDatasetRewriteNeeded()) {
         modifiedByteCode = datasetRewriter.rewriteClass(className, new ByteArrayInputStream(modifiedByteCode));
       }
       if (classesToRewrite.get(className).isAuthRewriteNeeded()) {

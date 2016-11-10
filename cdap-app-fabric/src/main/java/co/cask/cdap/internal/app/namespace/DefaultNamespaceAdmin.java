@@ -320,7 +320,7 @@ public final class DefaultNamespaceAdmin implements NamespaceAdmin {
     }
 
     // Namespace data can be deleted. Revoke all privileges first
-    authorizationEnforcer.enforce(namespaceId, authenticationContext.getPrincipal(), Action.ADMIN);
+//    authorizationEnforcer.enforce(namespaceId, authenticationContext.getPrincipal(), Action.ADMIN);
     try {
       dsFramework.deleteAllInstances(namespaceId);
     } catch (DatasetManagementException | IOException e) {
